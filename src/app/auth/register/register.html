@@ -20,9 +20,9 @@
               <circle cx="12" cy="8" r="4"/>
               <path d="M4 21v-1a7 7 0 0 1 14 0v1"/>
             </svg>
-            <input id="register-nombre" type="text" formControlName="nombre" placeholder="Como aparece en tu documento" />
+            <input id="register-nombre" type="text" formControlName="nombreCompleto" placeholder="Como aparece en tu documento" />
           </div>
-          <p class="field-error" *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched">
+          <p class="field-error" *ngIf="registerForm.get('nombreCompleto')?.invalid && registerForm.get('nombreCompleto')?.touched">
             Ingresa tu nombre completo.
           </p>
         </div>
@@ -49,9 +49,9 @@
               <circle cx="8" cy="12" r="2"/>
               <path d="M14 10h4M14 14h4"/>
             </svg>
-            <input id="register-identificacion" type="text" formControlName="identificacion" placeholder="Como aparece en tu documento" />
+            <input id="register-identificacion" type="text" formControlName="numeroIdentificacion" placeholder="Como aparece en tu documento" />
           </div>
-          <p class="field-error" *ngIf="registerForm.get('identificacion')?.invalid && registerForm.get('identificacion')?.touched">
+          <p class="field-error" *ngIf="registerForm.get('numeroIdentificacion')?.invalid && registerForm.get('numeroIdentificacion')?.touched">
             Ingresa tu número de identificación.
           </p>
         </div>
@@ -62,9 +62,9 @@
             <svg class="input-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
             </svg>
-            <input id="register-telefono" type="tel" formControlName="telefono" placeholder="300 000 0000" />
+            <input id="register-telefono" type="tel" formControlName="numeroTelefonico" placeholder="300 000 0000" />
           </div>
-          <p class="field-error" *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+          <p class="field-error" *ngIf="registerForm.get('numeroTelefonico')?.invalid && registerForm.get('numeroTelefonico')?.touched">
             Ingresa tu número telefónico.
           </p>
         </div>
@@ -116,7 +116,7 @@
             <input
               id="register-password2"
               [type]="showPassword2 ? 'text' : 'password'"
-              formControlName="password2"
+              formControlName="confirmPassword"
               placeholder="Repite tu contraseña"
               autocomplete="new-password"
             />
@@ -138,7 +138,7 @@
               </svg>
             </button>
           </div>
-          <p class="field-error" *ngIf="registerForm.get('password2')?.invalid && registerForm.get('password2')?.touched">
+          <p class="field-error" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
             Repite tu contraseña.
           </p>
           <p class="field-error" *ngIf="passwordsNoCoinciden">

@@ -1,0 +1,83 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-card__banner">
+      <div class="auth-card__mark">PA</div>
+      <h1>Piedra Azul</h1>
+      <p>Tu salud, cuidada con cercanía humana</p>
+    </div>
+
+    <div class="auth-card__body">
+      <nav class="auth-tabs" aria-label="Cambiar entre iniciar sesión y crear cuenta">
+        <a class="auth-tabs__tab auth-tabs__tab--active" routerLink="/auth/login">Iniciar sesión</a>
+        <a class="auth-tabs__tab" routerLink="/auth/register">Crear cuenta</a>
+      </nav>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="field">
+          <label for="login-email">Correo electrónico</label>
+          <div class="input-box">
+            <svg class="input-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 6-10 7L2 6"/>
+            </svg>
+            <input id="login-email" type="email" formControlName="email" placeholder="nombre@correo.com" autocomplete="email" />
+          </div>
+          <p class="field-error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            Ingresa un correo electrónico válido.
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Contraseña</label>
+          <div class="input-box">
+            <svg class="input-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              id="login-password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Tu contraseña"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="input-box__toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            >
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                <path d="M6.61 6.61A13.53 13.53 0 0 0 2 11s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                <path d="m2 2 20 20"/>
+                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              </svg>
+            </button>
+          </div>
+          <p class="field-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            Ingresa tu contraseña.
+          </p>
+        </div>
+
+        <div class="options-row">
+          <label class="remember">
+            <input type="checkbox" formControlName="rememberMe" />
+            Recordarme
+          </label>
+          <a class="forgot-link" routerLink="/auth/forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button class="submit-btn" type="submit">Iniciar sesión</button>
+
+        <p class="switch-mode">
+          ¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

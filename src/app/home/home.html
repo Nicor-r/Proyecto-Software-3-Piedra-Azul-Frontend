@@ -1,0 +1,185 @@
+<div class="landing">
+  <nav class="nav">
+    <div class="marca">
+      <span class="icono-marca">PA</span>
+      Piedra Azul
+    </div>
+    <div class="enlaces-nav">
+      <a href="#inicio">Inicio</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#equipo">Equipo médico</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <a class="boton-sesion" routerLink="/auth/login">Iniciar sesión</a>
+  </nav>
+
+  <section class="hero" id="inicio">
+    <div>
+      <h1>Tu salud, cuidada con cercanía humana</h1>
+      <p>
+        En Piedra Azul combinamos atención médica integral con un trato cálido y
+        personal, para que cada visita se sienta tranquila y en confianza.
+      </p>
+      <div class="acciones-hero">
+        <button class="boton-primario">
+          <svg class="icono-boton" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          Agendar una cita
+        </button>
+        <a class="enlace-secundario" href="#servicios">
+          Conocer nuestros servicios
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="imagen-hero">
+      <div class="foto-hero">Aquí va la foto del sitio</div>
+    </div>
+  </section>
+
+  <div class="franja-acciones">
+    <button class="accion-rapida accion-rapida--oscura">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+      Agendar cita
+    </button>
+    <button class="accion-rapida">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m21 21-4.3-4.3"/>
+      </svg>
+      Consultar cita
+    </button>
+  </div>
+
+  <section class="seccion-porque" id="servicios">
+    <div class="porque-intro">
+      <h2>Una clínica que te conoce, no solo te atiende</h2>
+      <p>Piedra Azul nació para que agendar una cita no se sienta como hacer un trámite con un desconocido.</p>
+      <img class="mascota" src="/mascota.png" alt="Mascota de Piedra Azul saludando" />
+    </div>
+    <div class="lista-razones">
+      <div class="razon" *ngFor="let c of caracteristicas">
+        <svg class="icono-razon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [ngSwitch]="c.icono">
+          <ng-container *ngSwitchCase="'corazon'">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
+          </ng-container>
+          <ng-container *ngSwitchCase="'usuarios'">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </ng-container>
+          <ng-container *ngSwitchCase="'reloj'">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </ng-container>
+          <ng-container *ngSwitchCase="'escudo'">
+            <path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5Z"/>
+          </ng-container>
+        </svg>
+        <div>
+          <h3>{{ c.titulo }}</h3>
+          <p>{{ c.texto }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion-equipo" id="equipo">
+    <div class="encabezado-equipo">
+      <h2>Nuestro equipo médico</h2>
+      <p>Cada especialista tiene su propia disponibilidad. Elige uno para ver sus horarios.</p>
+    </div>
+    <div class="lista-equipo">
+      <div class="tarjeta-equipo" *ngFor="let d of doctores">
+        <button class="cabecera-equipo" (click)="alternar(d.id)" [attr.aria-expanded]="estaAbierto(d.id)">
+          <div class="avatar-equipo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 2v6a2 2 0 0 0 2 2h6"/>
+              <path d="M19 15v2a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4v-6a4 4 0 0 1 4-4h2"/>
+              <circle cx="9" cy="13" r="2"/>
+            </svg>
+          </div>
+          <div class="datos-equipo">
+            <p class="nombre">{{ d.nombre }}</p>
+            <p class="especialidad">{{ d.especialidad }}</p>
+          </div>
+          <span class="texto-horarios-equipo">
+            Ver horarios
+            <svg *ngIf="!estaAbierto(d.id)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+            <svg *ngIf="estaAbierto(d.id)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m18 15-6-6-6 6"/>
+            </svg>
+          </span>
+        </button>
+        <div class="panel-horarios-equipo" *ngIf="estaAbierto(d.id)">
+          <p>Horarios disponibles hoy:</p>
+          <div class="rejilla-horarios-equipo">
+            <span class="horario-equipo" [class.ocupado]="!h.disponible" *ngFor="let h of d.horarios">
+              {{ h.disponible ? h.hora : 'Ocupado' }}
+            </span>
+          </div>
+          <button class="boton-agendar-equipo">Agendar con {{ d.nombre }}</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion-info" id="contacto">
+    <div class="bloque-info">
+      <div class="linea-info">
+        <svg class="icono-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <div>
+          <strong>Horario de atención</strong>
+          <span>Lunes a sábado · 7:00 a. m. — 8:00 p. m.</span>
+        </div>
+      </div>
+      <div class="linea-info">
+        <svg class="icono-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <div>
+          <strong>Ubicación</strong>
+          <span>CCHJ+68, Popayán, Cauca</span>
+        </div>
+      </div>
+      <div class="linea-info">
+        <svg class="icono-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <div>
+          <strong>Teléfono</strong>
+          <span>+57 312 606 9041</span>
+        </div>
+      </div>
+    </div>
+    <div class="bloque-info">
+      <iframe
+        class="mapa-marcador"
+        [src]="mapaUrl"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        style="border:0;"
+      ></iframe>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <h4>PiedraAzul</h4>
+    <p>Clínica con mirada integral: medicina general, terapias y seguimiento continuo para las familias.</p>
+  </footer>
+  <div class="franja-derechos">© 2026 Piedra Azul · Popayán, Colombia</div>
+</div>

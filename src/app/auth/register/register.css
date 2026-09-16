@@ -1,0 +1,275 @@
+/* Si "Fraunces" y "Lexend" no están cargadas globalmente en index.html,
+   agrega ahí los <link> de Google Fonts para mejor rendimiento.
+   Este archivo ya incluye una alternativa de respaldo por si no se cargan. */
+
+:host {
+  --azul-fondo: #6fa3d8;
+  --azul-oscuro: #16324f;
+  --crema: #fbf8f2;
+  --superficie: #ffffff;
+  --texto: #223342;
+  --texto-suave: #647285;
+  --borde: #e7e9ec;
+  --error: #b5432e;
+
+  display: block;
+  font-family: 'Lexend', 'Segoe UI', system-ui, sans-serif;
+  color: var(--texto);
+}
+
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #dcebf7 0%, var(--crema) 55%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3em 1.5em;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 26em;
+  background: var(--superficie);
+  border-radius: 1.4em;
+  box-shadow: 0 1.5em 3em -1.2em rgba(22, 50, 79, 0.35);
+  overflow: hidden;
+}
+
+.auth-card__banner {
+  background: var(--azul-fondo);
+  padding: 2em 2em 2.4em;
+  text-align: center;
+  position: relative;
+}
+
+.auth-card__banner::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1.6em;
+  background: var(--superficie);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.auth-card__mark {
+  width: 3.2em;
+  height: 3.2em;
+  border-radius: 1em;
+  margin: 0 auto 0.7em;
+  background: var(--superficie);
+  color: var(--azul-oscuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.2em;
+  box-shadow: 0 0.4em 0.8em -0.3em rgba(22, 50, 79, 0.3);
+}
+
+.auth-card__banner h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.35em;
+  color: var(--azul-oscuro);
+  margin: 0 0 0.3em;
+}
+
+.auth-card__banner p {
+  font-size: 0.92em;
+  color: #1f425f;
+  margin: 0;
+}
+
+.auth-card__body {
+  padding: 0.5em 2em 2.2em;
+}
+
+.auth-tabs {
+  display: flex;
+  background: #eef2f6;
+  border-radius: 999px;
+  padding: 0.3em;
+  margin-bottom: 1.8em;
+  gap: 0.25em;
+}
+
+.auth-tabs__tab {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.75em 0.5em;
+  font-size: 1em;
+  font-weight: 500;
+  color: var(--texto-suave);
+}
+
+.auth-tabs__tab--active {
+  background: var(--superficie);
+  color: var(--azul-oscuro);
+  box-shadow: 0 0.2em 0.5em rgba(22, 50, 79, 0.15);
+}
+
+.field {
+  margin-bottom: 1.1em;
+}
+
+.field label {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin-bottom: 0.4em;
+}
+
+.input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-box__icon {
+  position: absolute;
+  left: 0.9em;
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--texto-suave);
+  pointer-events: none;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 0.8em 2.6em 0.8em 2.6em;
+  border: 1.5px solid var(--borde);
+  border-radius: 0.9em;
+  font-size: 1em;
+  font-family: inherit;
+  background: #fafbfc;
+  color: var(--texto);
+}
+
+.input-box input:focus-visible {
+  border-color: var(--azul-fondo);
+  outline: 3px solid var(--azul-fondo);
+  outline-offset: 1px;
+  background: #ffffff;
+}
+
+.input-box__toggle {
+  position: absolute;
+  right: 0.7em;
+  background: transparent;
+  border: none;
+  color: var(--texto-suave);
+  padding: 0.4em;
+  display: flex;
+  cursor: pointer;
+}
+
+.input-box__toggle svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 0.85em;
+  margin: 0.35em 0 0;
+}
+
+.options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.3em;
+  font-size: 0.9em;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--texto-suave);
+}
+
+.remember input {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.forgot-link {
+  color: var(--azul-oscuro);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0.95em;
+  font-size: 1.02em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #ffffff;
+  margin-bottom: 1.2em;
+  background: linear-gradient(135deg, var(--azul-fondo), var(--azul-oscuro));
+  box-shadow: 0 0.6em 1.2em -0.5em rgba(22, 50, 79, 0.5);
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  filter: brightness(1.05);
+}
+
+.switch-mode {
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+.switch-mode a {
+  color: var(--azul-oscuro);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.switch-mode a:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submit-btn,
+  .auth-tabs__tab {
+    transition: none;
+  }
+}
+.terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6em;
+  font-size: 0.88em;
+  color: var(--texto-suave);
+}
+
+.terms-row input {
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: 0.2em;
+  flex-shrink: 0;
+}
+
+.terms-row a {
+  color: var(--azul-oscuro);
+  font-weight: 500;
+}
+
+.terms-row a:hover {
+  text-decoration: underline;
+}

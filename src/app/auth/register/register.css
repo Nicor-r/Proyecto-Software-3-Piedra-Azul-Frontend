@@ -273,3 +273,19 @@
 .terms-row a:hover {
   text-decoration: underline;
 }
+.form-message {
+  border-radius: 0.8em;
+  padding: 0.75em 1em;
+  font-size: 0.9em;
+  margin: 0 0 1.2em;
+}
+
+.form-message--success {
+  background: #e8f4ee;
+  color: #2e7d5b;
+}
+
+.form-message--error {
+  background: #fbeae6;
+  color: var(--error);
+}

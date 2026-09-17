@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -9,7 +9,8 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { Auth } from '../../core/services/auth';
 
 function passwordsCoincidenValidator(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
@@ -33,8 +34,12 @@ export class Register {
   registerForm: FormGroup;
   showPassword = false;
   showPassword2 = false;
+  mensajeExito = signal('');
+  mensajeError = signal('');
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+              private auth: Auth,
+              private router: Router) {
     this.registerForm = this.fb.group(
       {
         nombreCompleto: ['', [Validators.required]],
@@ -65,11 +70,36 @@ export class Register {
   }
 
   onSubmit(): void {
+    this.mensajeExito.set('');
+    this.mensajeError.set('');
+
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    // TODO: llamar al AuthService una vez lo creemos
+    const request = {
+      nombreCompleto: this.registerForm.get('nombreCompleto')?.value,
+      email: this.registerForm.get('email')?.value,
+      numeroIdentificacion: this.registerForm.get('numeroIdentificacion')?.value,
+      numeroTelefonico: this.registerForm.get('numeroTelefonico')?.value,
+      password: this.registerForm.get('password')?.value,
+      confirmPassword: this.registerForm.get('confirmPassword')?.value,
+    };
+
+    this.auth.register(request).subscribe({
+      next: () => {
+        this.mensajeExito.set('Registro exitoso');
+        setTimeout(() => {
+          this.router.navigate(['/auth/login']);
+        }, 2000);
+      },
+      error: (error) => {
+        console.error('Error en el registro:', error);
+        console.error('Mensaje del backend:', error.error);
+
+        this.mensajeError.set(error.error || 'Ocurrio un error durante el registro');
+      }
+    });
   }
 }

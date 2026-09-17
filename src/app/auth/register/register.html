@@ -11,7 +11,8 @@
         <a class="auth-tabs__tab" routerLink="/auth/login">Iniciar sesión</a>
         <a class="auth-tabs__tab auth-tabs__tab--active" routerLink="/auth/register">Crear cuenta</a>
       </nav>
-
+      <p class="form-message form-message--success" *ngIf="mensajeExito()">{{ mensajeExito() }}</p>
+      <p class="form-message form-message--error" *ngIf="mensajeError()">{{ mensajeError() }}</p>
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="field">
           <label for="register-nombre">Nombre completo</label>

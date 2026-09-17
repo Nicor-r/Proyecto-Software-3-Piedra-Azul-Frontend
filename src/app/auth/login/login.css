@@ -24,6 +24,7 @@
   justify-content: center;
   align-items: flex-start;
   padding: 3em 1.5em;
+  position: relative;
 }
 
 .auth-card {
@@ -249,4 +250,44 @@
   .auth-tabs__tab {
     transition: none;
   }
+}
+.form-message {
+  border-radius: 0.8em;
+  padding: 0.75em 1em;
+  font-size: 0.9em;
+  margin: 0 0 1.2em;
+}
+
+.form-message--success {
+  background: #e8f4ee;
+  color: #2e7d5b;
+}
+
+.form-message--error {
+  background: #fbeae6;
+  color: var(--error);
+}
+
+.back-to-home {
+  position: absolute;
+  top: 1.5em;
+  left: 1.5em;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--azul-oscuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0.4em 0.8em -0.3em rgba(22, 50, 79, 0.3);
+}
+
+.back-to-home:hover {
+  background: #eef4fa;
+}
+
+.back-to-home svg {
+  width: 1.2em;
+  height: 1.2em;
 }

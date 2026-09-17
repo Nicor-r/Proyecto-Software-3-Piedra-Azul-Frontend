@@ -10,7 +10,20 @@
       <a href="#equipo">Equipo médico</a>
       <a href="#contacto">Contacto</a>
     </div>
-    <a class="boton-sesion" routerLink="/auth/login">Iniciar sesión</a>
+    <ng-container *ngIf="!sesionIniciada(); else sesionActivaTpl">
+      <a class="boton-sesion" routerLink="/auth/login">Iniciar sesión</a>
+    </ng-container>
+    <ng-template #sesionActivaTpl>
+      <div class="estado-sesion">
+        <span class="texto-sesion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          Sesión iniciada
+        </span>
+        <button class="boton-sesion" (click)="cerrarSesion()">Cerrar sesión</button>
+      </div>
+    </ng-template>
   </nav>
 
   <section class="hero" id="inicio">

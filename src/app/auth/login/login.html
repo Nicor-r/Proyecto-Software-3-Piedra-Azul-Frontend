@@ -1,4 +1,10 @@
 <div class="auth-page">
+  <a class="back-to-home" routerLink="/home" aria-label="Volver al inicio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+  </a>
+
   <div class="auth-card">
     <div class="auth-card__banner">
       <div class="auth-card__mark">PA</div>
@@ -11,7 +17,8 @@
         <a class="auth-tabs__tab auth-tabs__tab--active" routerLink="/auth/login">Iniciar sesión</a>
         <a class="auth-tabs__tab" routerLink="/auth/register">Crear cuenta</a>
       </nav>
-
+      <p class="form-message form-message--success" *ngIf="mensajeExito()">{{ mensajeExito() }}</p>
+      <p class="form-message form-message--error" *ngIf="mensajeError()">{{ mensajeError() }}</p>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="field">
           <label for="login-email">Correo electrónico</label>

@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Auth } from '../core/services/auth';
 
 interface Caracteristica {
   icono: 'corazon' | 'usuarios' | 'reloj' | 'escudo';
@@ -30,11 +31,17 @@ interface Doctor {
 })
 export class Home {
   mapaUrl: SafeResourceUrl;
+  sesionIniciada = signal(false);
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(
+    private sanitizer: DomSanitizer,
+    private auth: Auth,
+    private router: Router
+  ) {
     this.mapaUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d498.2796833228189!2d-76.569252122733!3d2.4276543373221613!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sco!4v1789531520546!5m2!1ses-419!2sco'
     );
+    this.sesionIniciada.set(this.auth.isLoggedIn());
   }
   caracteristicas: Caracteristica[] = [
     {
@@ -103,5 +110,10 @@ export class Home {
 
   estaAbierto(id: number): boolean {
     return this.expandido() === id;
+  }
+
+  cerrarSesion(): void {
+    this.auth.logout();
+    this.sesionIniciada.set(false);
   }
 }

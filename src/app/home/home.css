@@ -531,4 +531,25 @@
     border-left: none;
     border-top: 1px solid var(--borde);
   }
+
+}
+
+.estado-sesion {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.texto-sesion {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #2e7d5b;
+}
+
+.texto-sesion svg {
+  width: 1.1em;
+  height: 1.1em;
 }

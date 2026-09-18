@@ -56,10 +56,16 @@ export class Login {
         }, 1000);
       },
       error: (error) => {
-        console.error('Error en el login:', error);
-        console.error('Mensaje del backend:', error.error);
+        console.error('Error en el inicio de sesion:', error);
 
-        this.mensajeError.set(error.error || 'Ocurrio un error durante el inicio de sesion');
+        const mensaje =
+          typeof error.error === 'string'
+            ? error.error
+            : error.error?.message ?? 'Ocurrio un error durante el inicio de sesion';
+
+        console.error('Mensaje del backend:', mensaje);
+
+        this.mensajeError.set(mensaje);
       }
     });
   }

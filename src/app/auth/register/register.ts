@@ -96,9 +96,15 @@ export class Register {
       },
       error: (error) => {
         console.error('Error en el registro:', error);
-        console.error('Mensaje del backend:', error.error);
 
-        this.mensajeError.set(error.error || 'Ocurrio un error durante el registro');
+        const mensaje =
+          typeof error.error === 'string'
+            ? error.error
+            : error.error?.message ?? 'Ocurrio un error durante el registro';
+
+        console.error('Mensaje del backend:', mensaje);
+
+        this.mensajeError.set(mensaje);
       }
     });
   }

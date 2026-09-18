@@ -3,6 +3,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+
 
 export interface RegisterRequest {
   nombreCompleto: string;
@@ -32,7 +34,7 @@ export class Auth {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  private readonly apiUrl = 'http://localhost:8080/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
 
   register(request: RegisterRequest): Observable<void> {
     return this.http.post<void>(

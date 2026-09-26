@@ -1,0 +1,31 @@
+<div class="mis-citas-container">
+  <h2>Mis citas</h2>
+
+  <div *ngIf="cargando()" class="estado-carga">Cargando tus citas…</div>
+
+  <div *ngIf="!cargando() && mensajeError()" class="mensaje error">
+    {{ mensajeError() }}
+  </div>
+
+  <div *ngIf="!cargando() && !mensajeError() && citas().length === 0" class="sin-citas">
+    <p>Aún no tienes citas agendadas.</p>
+    <a class="boton-agendar" routerLink="/citas/agendar">Agendar mi primera cita</a>
+  </div>
+
+  <div *ngIf="!cargando() && citas().length > 0" class="lista-citas">
+    <div class="tarjeta-cita" *ngFor="let c of citas()">
+      <div class="info-principal">
+        <p class="fecha">{{ formatearFecha(c.fecha) }}</p>
+        <p class="hora">{{ formatearHora(c.hora) }}</p>
+      </div>
+      <div class="info-secundaria">
+        <span class="medico">Médico #{{ c.medicoId }}</span>
+        <span class="estado" [ngClass]="'estado-' + c.estado.toLowerCase()">
+          {{ c.estado }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <a class="volver" routerLink="/">← Volver al inicio</a>
+</div>

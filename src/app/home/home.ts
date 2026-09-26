@@ -116,4 +116,8 @@ export class Home {
     this.auth.logout();
     this.sesionIniciada.set(false);
   }
+  irAgendar(): void {
+    this.router.navigate(['/citas/agendar']);
+  }
 }
+

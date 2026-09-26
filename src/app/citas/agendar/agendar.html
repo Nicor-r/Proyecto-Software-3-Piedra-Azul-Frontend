@@ -1,0 +1,52 @@
+<div class="agendar-container">
+  <h2>Agendar cita</h2>
+
+  <form [formGroup]="agendarForm" (ngSubmit)="buscarFranjas()">
+    <div class="campo">
+      <label for="medicoId">Médico</label>
+      <select id="medicoId" formControlName="medicoId">
+        <option value="" disabled selected>Selecciona un médico</option>
+        <option *ngFor="let m of medicos" [value]="m.id">
+          {{ m.nombre }} — {{ m.especialidad }}
+        </option>
+      </select>
+      <small *ngIf="agendarForm.get('medicoId')?.touched && agendarForm.get('medicoId')?.invalid">
+        Debes seleccionar un médico
+      </small>
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" type="date" formControlName="fecha" [min]="fechaMinima" />
+      <small *ngIf="agendarForm.get('fecha')?.touched && agendarForm.get('fecha')?.invalid">
+        Debes seleccionar una fecha
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="cargandoFranjas()">
+      {{ cargandoFranjas() ? 'Buscando…' : 'Buscar franjas' }}
+    </button>
+  </form>
+
+  <!-- Mensajes -->
+  <div *ngIf="mensajeExito()" class="mensaje exito">{{ mensajeExito() }}</div>
+  <div *ngIf="mensajeError()" class="mensaje error">{{ mensajeError() }}</div>
+
+  <!-- Franjas -->
+  <div *ngIf="franjas().length > 0" class="franjas">
+    <h3>Franjas disponibles</h3>
+    <div class="grid-franjas">
+      <button
+        *ngFor="let f of franjas()"
+        type="button"
+        class="franja"
+        [class.ocupada]="!f.disponible"
+        [disabled]="!f.disponible"
+        (click)="seleccionarFranja(f)">
+        {{ formatearHora(f.hora) }}
+      </button>
+    </div>
+  </div>
+
+  <a routerLink="/">← Volver al inicio</a>
+</div>

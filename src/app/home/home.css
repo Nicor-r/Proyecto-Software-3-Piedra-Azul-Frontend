@@ -553,3 +553,14 @@
   width: 1.1em;
   height: 1.1em;
 }
+
+
+a.boton-primario,
+a.accion-rapida,
+a.boton-agendar-equipo {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

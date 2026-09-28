@@ -32,6 +32,7 @@ interface Doctor {
 export class Home {
   mapaUrl: SafeResourceUrl;
   sesionIniciada = signal(false);
+  esAdmin = signal(false);
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -42,6 +43,7 @@ export class Home {
       'https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d498.2796833228189!2d-76.569252122733!3d2.4276543373221613!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2sco!4v1789531520546!5m2!1ses-419!2sco'
     );
     this.sesionIniciada.set(this.auth.isLoggedIn());
+    this.esAdmin.set(this.auth.isAdmin());
   }
   caracteristicas: Caracteristica[] = [
     {
@@ -115,6 +117,7 @@ export class Home {
   cerrarSesion(): void {
     this.auth.logout();
     this.sesionIniciada.set(false);
+    this.esAdmin.set(false);
   }
   irAgendar(): void {
     this.router.navigate(['/citas/agendar']);

@@ -24,6 +24,9 @@ export interface TokenResponse {
   token: string;
 }
 
+/** Roles reconocidos en el token JWT emitido por el backend. */
+export type Rol = 'ADMIN' | 'PACIENTE' | string;
+
 const TOKEN_KEY = 'auth_token';
 
 @Injectable({
@@ -69,6 +72,60 @@ export class Auth {
 
   isLoggedIn(): boolean {
     return this.getToken() !== null;
+  }
+
+  /**
+   * Obtiene el rol del usuario autenticado a partir del claim del JWT
+   * (soporta las variantes `role`, `rol`, `authorities` y `roles`).
+   * Devuelve null si no hay token o el token no tiene un rol reconocible.
+   */
+  getRole(): Rol | null {
+    const claims = this.decodeToken();
+    if (!claims) {
+      return null;
+    }
+
+    const crudo =
+      claims['role'] ??
+      claims['rol'] ??
+      claims['authorities'] ??
+      claims['roles'];
+
+    if (!crudo) {
+      return null;
+    }
+
+    const valor = Array.isArray(crudo) ? crudo[0] : crudo;
+    return typeof valor === 'string' ? valor.toUpperCase() : null;
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
+  private decodeToken(): Record<string, unknown> | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    const partes = token.split('.');
+    if (partes.length < 2) {
+      return null;
+    }
+
+    try {
+      const base64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+      const json = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+          .join('')
+      );
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
   }
 
   private setToken(token: string, rememberMe: boolean): void {

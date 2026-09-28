@@ -22,6 +22,7 @@
           </svg>
           Sesión iniciada
         </span>
+        <a class="boton-sesion" *ngIf="esAdmin()" routerLink="/admin/configuracion">Panel administrador</a>
         <button class="boton-sesion" (click)="cerrarSesion()">Cerrar sesión</button>
       </div>
     </ng-template>

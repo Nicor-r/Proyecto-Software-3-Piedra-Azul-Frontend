@@ -1,0 +1,127 @@
+<main class="gestionar-container">
+  <header class="cabezera">
+    <div>
+      <p class="titulo">Piedra Azul</p>
+      <h1>Administrar</h1>
+      <p class="subtitle">Agenda, consulta y administra tus citas médicas.</p>
+    </div>
+  </header>
+<!--
+  <section class="appointment-tools" aria-label="Herramientas de búsqueda y filtrado">
+    <label class="search-field">
+      <span class="sr-only">Buscar cita</span>
+      <input type="search" placeholder="Buscar por paciente o especialista" />
+    </label>
+    <label>
+      <span class="sr-only">Filtrar por estado</span>
+      <select>
+        <option>Todos los estados</option>
+        <option>Pendiente</option>
+        <option>Confirmada</option>
+        <option>Cancelada</option>
+        <option>Completada</option>
+      </select>
+    </label>
+    <label>
+      <span class="sr-only">Seleccionar fecha</span>
+      <input type="date" />
+    </label>
+  </section>
+
+  <section class="summary-cards" aria-label="Resumen de citas">
+    <article class="summary-card"><span>Próximas citas</span><strong>04</strong></article>
+    <article class="summary-card"><span>Confirmadas</span><strong>02</strong></article>
+    <article class="summary-card"><span>Por confirmar</span><strong>01</strong></article>
+    <article class="summary-card"><span>Completadas</span><strong>12</strong></article>
+  </section>
+
+  <section class="appointments-section">
+    <div class="section-heading">
+      <div>
+        <h2>Próximas citas</h2>
+        <p>Consulta los detalles de tus citas programadas.</p>
+      </div>
+      <button type="button" class="secondary-button">Ver calendario</button>
+    </div>
+
+    <div class="appointments-table-wrapper">
+      <div class="appointments-table">
+        <caption class="sr-only">Listado de próximas citas</caption>
+      </div>table>
+    </div>
+
+    <div class="empty-state" hidden>
+      <h3>No hay citas para mostrar</h3>
+      <p>Programa una nueva cita para verla en este listado.</p>
+    </div>
+  </section>
+-->
+<main>
+  <section class="ventana-tiempo">
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <header class="page-header">
+        <div>
+          <h2>Ventana de tiempo</h2>
+          <p class="subtitle">Ajuste valores de agendamiento autónomo.</p>
+        </div>
+      </header>
+
+      <div class="campo">
+        <label>
+          <span class="subtitle">Ventana de agendamiento (semanas):</span>
+          <input type="number" formControlName="semanas" min="1" max="52" />
+        </label>
+        @if (form.controls.semanas.touched && form.controls.semanas.invalid) {
+          <small class="error">Ingrese un valor entre 1 y 52.</small>
+        }
+      </div>
+
+      <fieldset class="campo" formGroupName="diasAtencion">
+        <legend class="subtitle">Días de atención:</legend>
+        @for (dia of dias; track dia) {
+          <label>
+            <input type="checkbox" [formControlName]="dia" />
+            {{ dia }}
+          </label>
+        }
+        @if (form.controls.diasAtencion.touched && form.controls.diasAtencion.invalid) {
+          <small class="error">Seleccione al menos un día.</small>
+        }
+      </fieldset>
+
+      <div class="campo" formGroupName="franjaHoraria">
+        <label>
+          <span class="subtitle">Hora de inicio:</span>
+          <input type="time" formControlName="horaInicio" />
+        </label>
+        <label>
+          <span class="subtitle">Hora de fin:</span>
+          <input type="time" formControlName="horaFin" />
+        </label>
+        @if (form.controls.franjaHoraria.errors?.['rangoInvalido']) {
+          <small class="error">La hora de fin debe ser posterior a la de inicio.</small>
+        }
+      </div>
+
+      <div class="campo">
+        <label>
+          <span class="subtitle">Intervalo entre citas (minutos):</span>
+          <input type="number" formControlName="intervaloMinutos" min="5" step="5" />
+        </label>
+        @if (form.controls.intervaloMinutos.touched && form.controls.intervaloMinutos.invalid) {
+          <small class="error">Ingrese un intervalo válido (mínimo 5 minutos).</small>
+        }
+      </div>
+
+      @if (mensaje()) {
+        <p class="subtitle">{{ mensaje() }}</p>
+      }
+
+      <button type="submit" [disabled]="form.invalid || form.pristine || guardando()">
+        Guardar
+      </button>
+    </form>
+  </section>
+  
+  <a routerLink="/">← Volver al inicio</a>
+</main>

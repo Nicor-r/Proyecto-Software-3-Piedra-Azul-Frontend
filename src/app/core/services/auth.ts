@@ -26,6 +26,17 @@ export interface TokenResponse {
 
 const TOKEN_KEY = 'auth_token';
 
+
+//Para
+export interface JwtPayload {
+  sub?: string;
+  exp?: number;
+  rol?: string;
+  role?: string;
+  roles?: string[];
+  [key: string]: unknown;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -81,4 +92,39 @@ export class Auth {
       sessionStorage.setItem(TOKEN_KEY, token);
     }
   }
+
+  //Metodos admin
+
+  private getPayload(): JwtPayload | null {
+  const token = this.getToken();
+  if (!token) {
+    return null;
+  }
+  try {
+    // El JWT usa base64url: hay que convertirlo a base64 normal
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+        .join('')
+    );
+    return JSON.parse(json) as JwtPayload;
+  } catch {
+    return null;
+  }
+}
+
+getRol(): string | null {
+  const payload = this.getPayload();
+  if (!payload) {
+    return null;
+  }
+  const rol = payload.rol ?? payload.role ?? payload.roles?.[0] ?? null;
+  return rol ? String(rol).replace(/^ROLE_/, '').toUpperCase() : null;
+}
+
+isAdmin(): boolean {
+  return this.getRol() === 'ADMIN';
+}
 }

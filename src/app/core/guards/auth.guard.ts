@@ -13,3 +13,10 @@ export const authGuard: CanActivateFn = () => {
   // Si no está autenticado, redirige al login
   return router.createUrlTree(['/auth/login']);
 };
+
+//Verifica que el usuario es admin para poder acceder a la pagina
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(Auth);
+  const router = inject(Router);
+  return auth.isLoggedIn() && auth.isAdmin() ? true : router.createUrlTree(['/']);
+};

@@ -1,14 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CitasService, Franja, Cita } from '../../core/services/citas';
-
-interface Medico {
-  id: string;
-  nombre: string;
-  especialidad: string;
-}
+import { CitasService, Franja, Cita, Doctor } from '../../core/services/citas';
 
 @Component({
   selector: 'app-agendar',
@@ -17,24 +11,18 @@ interface Medico {
   templateUrl: './agendar.html',
   styleUrl: './agendar.css',
 })
-export class AgendarCita {
+export class AgendarCita implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly citasService = inject(CitasService);
 
   agendarForm: FormGroup;
+  medicos = signal<Doctor[]>([]);
   franjas = signal<Franja[]>([]);
   cargandoFranjas = signal(false);
   mensajeExito = signal('');
   mensajeError = signal('');
   fechaMinima: string;
-
-  // Médicos disponibles (mock por ahora; en el futuro vendrán del backend)
-  medicos: Medico[] = [
-    { id: '1', nombre: 'Dra. Ibis González', especialidad: 'Cardiología' },
-    { id: '2', nombre: 'Dra. Clara Inés',   especialidad: 'Diabetes' },
-    { id: '3', nombre: 'Dr. Rocha',         especialidad: 'Terapia física' },
-  ];
 
   constructor() {
     const hoy = new Date();
@@ -43,6 +31,21 @@ export class AgendarCita {
     this.agendarForm = this.fb.group({
       medicoId: ['', [Validators.required]],
       fecha:    ['', [Validators.required]],
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarDoctores();
+  }
+
+  cargarDoctores(): void {
+    this.citasService.obtenerDoctores().subscribe({
+      next: (doctores) => {
+        this.medicos.set(doctores.filter((d) => d.activo));
+      },
+      error: (err) => {
+        console.error('Error al cargar médicos:', err);
+      }
     });
   }
 

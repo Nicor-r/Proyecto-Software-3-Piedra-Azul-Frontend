@@ -3,6 +3,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface Doctor {
+  id: string;
+  nombre: string;
+  activo: boolean;
+}
+
 export interface Franja {
   hora: string;
   disponible: boolean;
@@ -30,6 +36,10 @@ export class CitasService {
 
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/citas`;
+
+  obtenerDoctores(): Observable<Doctor[]> {
+    return this.http.get<Doctor[]>(`${environment.apiUrl}/doctores`);
+  }
 
   obtenerFranjasDisponibles(medicoId: string, fecha: string): Observable<Franja[]> {
     const params = new HttpParams()

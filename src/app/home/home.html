@@ -23,6 +23,7 @@
           Sesión iniciada
         </span>
         <a class="boton-sesion" *ngIf="esAdmin()" routerLink="/admin/configuracion">Panel administrador</a>
+        <a class="boton-sesion" *ngIf="esAgendador()" routerLink="/agendador/citas">Panel agendador</a>
         <button class="boton-sesion" (click)="cerrarSesion()">Cerrar sesión</button>
       </div>
     </ng-template>

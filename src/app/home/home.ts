@@ -33,6 +33,7 @@ export class Home {
   mapaUrl: SafeResourceUrl;
   sesionIniciada = signal(false);
   esAdmin = signal(false);
+  esAgendador = signal(false);
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -44,6 +45,7 @@ export class Home {
     );
     this.sesionIniciada.set(this.auth.isLoggedIn());
     this.esAdmin.set(this.auth.isAdmin());
+    this.esAgendador.set(this.auth.isAgendador());
   }
   caracteristicas: Caracteristica[] = [
     {
@@ -118,6 +120,7 @@ export class Home {
     this.auth.logout();
     this.sesionIniciada.set(false);
     this.esAdmin.set(false);
+    this.esAgendador.set(false);
   }
   irAgendar(): void {
     this.router.navigate(['/citas/agendar']);

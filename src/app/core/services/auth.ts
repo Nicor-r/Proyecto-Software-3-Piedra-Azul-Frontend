@@ -103,6 +103,16 @@ export class Auth {
     return this.getRole() === 'ADMIN';
   }
 
+  isAgendador(): boolean {
+    return this.getRole() === 'AGENDADOR';
+  }
+
+  getUserEmail(): string | null {
+    const claims = this.decodeToken();
+    if (!claims) return null;
+    return (claims['sub'] as string) ?? null;
+  }
+
   private decodeToken(): Record<string, unknown> | null {
     const token = this.getToken();
     if (!token) {

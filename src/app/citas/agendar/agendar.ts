@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CitasService, Franja, Cita } from '../../core/services/citas';
+import { ToastrService } from '@iqx-limited/ngx-toastr';
 
 interface Medico {
   id: string;
@@ -21,6 +22,7 @@ export class AgendarCita {
 
   private readonly fb = inject(FormBuilder);
   private readonly citasService = inject(CitasService);
+  private readonly toastr = inject(ToastrService);
 
   agendarForm: FormGroup;
   franjas = signal<Franja[]>([]);
@@ -99,6 +101,13 @@ export class AgendarCita {
         this.mensajeExito.set(
           `¡Cita agendada! ${cita.fecha} a las ${cita.hora} con estado ${cita.estado}`
         );
+
+        // 👇 Notificación Toastr de éxito
+        this.toastr.success(
+          `Tu cita ha sido asignada correctamente para el ${cita.fecha} a las ${cita.hora}`,
+          '¡Registro exitoso!'
+        );
+
         // Refresca las franjas para que la recién ocupada salga deshabilitada
         this.buscarFranjas();
       },
@@ -109,6 +118,9 @@ export class AgendarCita {
             ? error.error
             : error.error?.message ?? 'No se pudo agendar la cita';
         this.mensajeError.set(mensaje);
+
+        // 👇 Notificación Toastr de error
+        this.toastr.error(mensaje, 'Error al agendar');
       }
     });
   }

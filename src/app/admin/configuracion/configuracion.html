@@ -1,0 +1,181 @@
+<div class="config">
+  <header class="config__encabezado">
+    <h2>Configuración de agendamiento</h2>
+    <p>
+      Define cómo funciona el agendamiento autónomo: con cuánta anticipación se
+      habilitan las citas y la disponibilidad de cada especialista.
+    </p>
+  </header>
+
+  <p class="config__mensaje config__mensaje--error" *ngIf="mensajeErrorCarga()">
+    {{ mensajeErrorCarga() }}
+  </p>
+
+  <ng-container *ngIf="!cargando(); else cargandoTpl">
+    <p class="config__mensaje config__mensaje--exito" *ngIf="mensajeGlobalExito()">
+      {{ mensajeGlobalExito() }}
+    </p>
+    <p class="config__mensaje config__mensaje--error" *ngIf="mensajeGlobalError()">
+      {{ mensajeGlobalError() }}
+    </p>
+
+    <section class="tarjeta">
+      <h3>
+        <span class="tarjeta__icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+          </svg>
+        </span>
+        Ventana de agendamiento
+      </h3>
+      <p class="tarjeta__descripcion">
+        Con cuántas semanas de anticipación los pacientes pueden ver y reservar horarios disponibles.
+      </p>
+
+      <form [formGroup]="ventanaForm" class="config__campo-ventana">
+        <label for="ventana-semanas">Habilitar citas con</label>
+        <select id="ventana-semanas" formControlName="ventanaSemanas">
+          <option *ngFor="let semanas of opcionesVentana" [value]="semanas">{{ semanas }} semanas</option>
+        </select>
+        <span>de anticipación</span>
+      </form>
+      <p class="field-error" *ngIf="ventanaInvalidaVacia">El campo es obligatorio.</p>
+      <p class="field-error" *ngIf="ventanaInvalidaValor">
+        La ventana de agendamiento debe ser un número entero mayor a 0.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <h3>Disponibilidad por especialista</h3>
+      <p class="tarjeta__descripcion">
+        Configura los días, el horario y el intervalo entre citas de cada médico o terapista.
+      </p>
+
+      <p class="config__vacio" *ngIf="paneles.length === 0">
+        No hay médicos ni terapistas registrados todavía.
+      </p>
+
+      <div class="panel-doctor" *ngFor="let panel of paneles">
+        <button
+          type="button"
+          class="panel-doctor__cabecera"
+          [class.panel-doctor__cabecera--inactivo]="!panel.doctor.activo"
+          (click)="alternarPanel(panel)"
+          [attr.aria-expanded]="panel.abierto"
+        >
+          <span class="panel-doctor__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+            </svg>
+          </span>
+          <span class="panel-doctor__datos">
+            <strong>{{ panel.doctor.nombre }}</strong>
+            <span class="panel-doctor__estado" [class.panel-doctor__estado--inactivo]="!panel.doctor.activo">
+              {{ panel.doctor.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </span>
+          <span class="panel-doctor__resumen" *ngIf="panel.doctor.activo">
+            {{ panel.dias.size }} día(s) ·
+            {{ panel.form.get('horaInicio')?.value || '--:--' }}
+            -
+            {{ panel.form.get('horaFin')?.value || '--:--' }}
+            · cada {{ panel.form.get('intervaloMinutos')?.value || '--' }} min
+          </span>
+          <svg *ngIf="panel.doctor.activo" class="panel-doctor__chevron" [class.panel-doctor__chevron--abierto]="panel.abierto"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+
+        <p class="field-error panel-doctor__error-inactivo" *ngIf="!panel.doctor.activo && panel.mensajeError">
+          {{ panel.mensajeError }}
+        </p>
+
+        <div class="panel-doctor__cuerpo" *ngIf="panel.abierto && panel.doctor.activo" [formGroup]="panel.form">
+          <p class="config__mensaje config__mensaje--exito" *ngIf="panel.mensajeExito">{{ panel.mensajeExito }}</p>
+          <p class="config__mensaje config__mensaje--error" *ngIf="panel.mensajeError">{{ panel.mensajeError }}</p>
+
+          <div class="campo-grupo">
+            <label>Días de atención</label>
+            <div class="dias-selector">
+              <button
+                type="button"
+                *ngFor="let dia of diasSemana"
+                class="dia-boton"
+                [class.dia-boton--activo]="diaSeleccionado(panel, dia.clave)"
+                (click)="alternarDia(panel, dia.clave)"
+              >
+                {{ dia.etiqueta }}
+              </button>
+            </div>
+            <p class="field-error" *ngIf="mostrarErrorDias(panel)">
+              Debe seleccionar al menos un día de atención.
+            </p>
+          </div>
+
+          <div class="campo-fila">
+            <div class="campo-grupo">
+              <label for="inicio-{{ panel.doctor.id }}">Franja horaria</label>
+              <div class="franja-inputs">
+                <input
+                  type="time"
+                  [id]="'inicio-' + panel.doctor.id"
+                  formControlName="horaInicio"
+                  [class.input-invalido]="errorCampo(panel, 'horaInicio')"
+                />
+                <span>a</span>
+                <input
+                  type="time"
+                  [id]="'fin-' + panel.doctor.id"
+                  formControlName="horaFin"
+                  [class.input-invalido]="errorCampo(panel, 'horaFin')"
+                />
+              </div>
+              <p class="field-error" *ngIf="errorCampo(panel, 'horaInicio') || errorCampo(panel, 'horaFin')">
+                El campo es obligatorio.
+              </p>
+              <p class="field-error" *ngIf="errorFranjaHoraria(panel)">
+                La hora de inicio debe ser anterior a la hora de fin.
+              </p>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="intervalo-{{ panel.doctor.id }}">Intervalo entre citas</label>
+              <div class="intervalo-input">
+                <input
+                  type="number"
+                  [id]="'intervalo-' + panel.doctor.id"
+                  formControlName="intervaloMinutos"
+                  [class.input-invalido]="errorCampo(panel, 'intervaloMinutos')"
+                />
+                <span>minutos</span>
+              </div>
+              <p class="field-error" *ngIf="errorCampo(panel, 'intervaloMinutos') && !errorIntervalo(panel)">
+                El campo es obligatorio.
+              </p>
+              <p class="field-error" *ngIf="errorIntervalo(panel)">
+                El intervalo debe ser un valor numérico entre 10 y 120 minutos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="config__pie">
+      <p>Los cambios se aplican al agendamiento autónomo de todos los pacientes.</p>
+      <button type="button" class="boton-guardar" [disabled]="guardandoTodo()" (click)="guardarCambios()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />
+          <path d="M17 21v-8H7v8M7 3v5h8" />
+        </svg>
+        {{ guardandoTodo() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
+    </footer>
+  </ng-container>
+
+  <ng-template #cargandoTpl>
+    <p class="config__vacio">Cargando configuración…</p>
+  </ng-template>
+</div>

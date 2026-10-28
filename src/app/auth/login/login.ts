@@ -52,7 +52,13 @@ export class Login {
       next: () => {
         this.mensajeExito.set('Sesión iniciada correctamente');
         setTimeout(() => {
-          this.router.navigate(['/home']);
+          if (this.auth.isAdmin()) {
+            this.router.navigate(['/admin/configuracion']);
+          } else if (this.auth.isAgendador()) {
+            this.router.navigate(['/agendador/citas']);
+          } else {
+            this.router.navigate(['/']);
+          }
         }, 1000);
       },
       error: (error) => {

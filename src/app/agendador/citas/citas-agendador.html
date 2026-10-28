@@ -1,0 +1,193 @@
+<div class="citas-vista">
+  <!-- Título y subtítulo -->
+  <header class="citas-vista__encabezado">
+    <h2 class="citas-vista__titulo">Citas por médico y fecha</h2>
+    <p class="citas-vista__subtitulo">
+      Filtra para ver el listado y la cantidad de citas de cada especialista.
+    </p>
+  </header>
+
+  <!-- Mensajes de alerta -->
+  <div class="alerta alerta--error" *ngIf="mensajeError()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
+  </div>
+
+  <div class="alerta alerta--info" *ngIf="mensajeInfo()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+    <span>{{ mensajeInfo() }}</span>
+  </div>
+
+  <!-- Tarjeta de filtros -->
+  <section class="tarjeta-filtro">
+    <form [formGroup]="filtroForm" (ngSubmit)="buscarCitas()" class="formulario-filtro">
+      <!-- Selector de Especialista -->
+      <div class="campo-grupo">
+        <label for="filtro-especialista">Especialista</label>
+        <div class="campo-select-wrapper">
+          <select id="filtro-especialista" formControlName="medicoId">
+            <option value="">Todos los especialistas</option>
+            <option *ngFor="let doc of doctores()" [value]="doc.id">
+              {{ doc.nombre }}
+            </option>
+          </select>
+          <svg class="icono-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Selector de Fecha -->
+      <div class="campo-grupo">
+        <label for="filtro-fecha">Fecha</label>
+        <div class="campo-input-wrapper">
+          <input
+            id="filtro-fecha"
+            type="date"
+            formControlName="fecha"
+            placeholder="Todas las fechas"
+          />
+        </div>
+      </div>
+
+      <!-- Selector de Estado -->
+      <div class="campo-grupo">
+        <label for="filtro-estado">Estado</label>
+        <div class="campo-select-wrapper">
+          <select id="filtro-estado" formControlName="estado">
+            <option value="TODOS">Todos los estados</option>
+            <option value="CONFIRMADA">Confirmada</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="COMPLETADA">Completada</option>
+            <option value="CANCELADA">Cancelada</option>
+          </select>
+          <svg class="icono-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Botón Buscar -->
+      <div class="campo-grupo campo-grupo--boton">
+        <button type="submit" class="btn-buscar" [disabled]="cargando()">
+          <span *ngIf="!cargando()">Buscar</span>
+          <span *ngIf="cargando()">Buscando...</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Contador de resultados -->
+  <div class="conteo-resultados">
+    <strong>{{ totalCitas() }}</strong> citas encontradas
+  </div>
+
+  <!-- Tabla de citas -->
+  <div class="tabla-contenedor">
+    <table class="tabla-citas">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Paciente</th>
+          <th>Especialista</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cita of citasPaginadas()">
+          <!-- Fecha -->
+          <td class="col-fecha">
+            {{ formatearFecha(cita.fecha) }}
+          </td>
+
+          <!-- Hora -->
+          <td class="col-hora">
+            {{ formatearHora(cita.hora) }}
+          </td>
+
+          <!-- Paciente -->
+          <td class="col-paciente">
+            <span class="icono-paciente">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </span>
+            <span class="nombre-paciente">{{ obtenerNombrePaciente(cita) }}</span>
+          </td>
+
+          <!-- Especialista -->
+          <td class="col-especialista">
+            {{ obtenerNombreMedico(cita) }}
+          </td>
+
+          <!-- Estado -->
+          <td class="col-estado">
+            <span [class]="obtenerClaseEstado(cita.estado)">
+              {{ formatearEstadoTexto(cita.estado) }}
+            </span>
+          </td>
+        </tr>
+
+        <!-- Estado vacío -->
+        <tr *ngIf="!cargando() && citasPaginadas().length === 0">
+          <td colspan="5" class="tabla-vacia">
+            No se encontraron citas para los criterios seleccionados.
+          </td>
+        </tr>
+
+        <!-- Cargando -->
+        <tr *ngIf="cargando()">
+          <td colspan="5" class="tabla-vacia">
+            Cargando citas...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pie de tabla / Paginación -->
+    <div class="tabla-pie" *ngIf="totalCitas() > 0">
+      <div class="tabla-pie__conteo">
+        {{ citasPaginadas().length }} de {{ totalCitas() }} citas
+      </div>
+
+      <div class="paginador" *ngIf="totalPaginas() > 1">
+        <button
+          type="button"
+          class="paginador__btn"
+          [disabled]="paginaActual() === 1"
+          (click)="paginaAnterior()"
+        >
+          &lt;
+        </button>
+
+        <button
+          *ngFor="let pag of paginasArray"
+          type="button"
+          class="paginador__btn"
+          [class.paginador__btn--activo]="pag === paginaActual()"
+          (click)="cambiarPagina(pag)"
+        >
+          {{ pag }}
+        </button>
+
+        <button
+          type="button"
+          class="paginador__btn"
+          [disabled]="paginaActual() === totalPaginas()"
+          (click)="paginaSiguiente()"
+        >
+          &gt;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

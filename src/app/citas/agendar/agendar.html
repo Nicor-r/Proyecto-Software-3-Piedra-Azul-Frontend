@@ -6,8 +6,8 @@
       <label for="medicoId">Médico</label>
       <select id="medicoId" formControlName="medicoId">
         <option value="" disabled selected>Selecciona un médico</option>
-        <option *ngFor="let m of medicos" [value]="m.id">
-          {{ m.nombre }} — {{ m.especialidad }}
+        <option *ngFor="let m of medicos()" [value]="m.id">
+          {{ m.nombre }}
         </option>
       </select>
       <small *ngIf="agendarForm.get('medicoId')?.touched && agendarForm.get('medicoId')?.invalid">

@@ -10,6 +10,7 @@ import { AdminLayout } from './admin/layout/admin-layout';
 import { Configuracion } from './admin/configuracion/configuracion';
 import { AgendadorLayout } from './agendador/layout/agendador-layout';
 import { CitasAgendador } from './agendador/citas/citas-agendador';
+import { TerapistaDashboard } from './features/terapista-dashboard/terapista-dashboard';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -33,6 +34,11 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'configuracion' },
       { path: 'configuracion', component: Configuracion },
     ],
+  },
+  {
+    path: 'terapista/dashboard',
+    component: TerapistaDashboard,
+    canActivate: [authGuard] // Agrega terapistaGuard si lo creaste
   },
   {
     path: 'agendador',

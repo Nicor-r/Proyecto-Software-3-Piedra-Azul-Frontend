@@ -1,0 +1,66 @@
+<div class="dashboard-container" style="padding: 20px; max-width: 1000px; margin: auto;">
+  <h1>Panel del Terapista</h1>
+  <p>Bienvenido. Desde aquí puedes gestionar tu jornada de atención.</p>
+
+  <div style="display: flex; gap: 40px; margin-top: 30px; flex-wrap: wrap;">
+    
+    <!-- SECCIÓN 1: EXPORTAR CSV -->
+    <div class="card" style="flex: 1; min-width: 300px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+      <h2>Exportar Jornada Diaria</h2>
+      <p>Descarga el listado de pacientes agendados para una fecha específica en formato Excel (CSV).</p>
+      
+      <div style="margin-top: 15px;">
+        <label style="display: block; margin-bottom: 5px;">Fecha de la jornada:</label>
+        <input type="date" [(ngModel)]="fechaExportar" style="padding: 8px; width: 100%; margin-bottom: 15px;">
+        
+        <button (click)="descargarCSV()" [disabled]="!fechaExportar || exportando()" 
+                style="background: #1976d2; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">
+          {{ exportando() ? 'Generando...' : 'Descargar CSV' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: HISTORIAL POR CÉDULA -->
+    <div class="card" style="flex: 2; min-width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+      <h2>Historial de Paciente</h2>
+      <p>Consulta el historial de citas de un paciente ingresando su número de cédula.</p>
+      
+      <div style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 20px;">
+        <input type="text" [(ngModel)]="cedulaBusqueda" placeholder="Ej: 1234567890" 
+               style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+        <button (click)="buscarHistorial()" [disabled]="!cedulaBusqueda || buscandoHistorial()"
+                style="background: #1976d2; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+          {{ buscandoHistorial() ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+
+      <!-- Mensaje de error/vacío -->
+      <p *ngIf="mensajeHistorial()" style="color: #d32f2f;">{{ mensajeHistorial() }}</p>
+
+      <!-- Tabla de Resultados -->
+      <table *ngIf="historial().length > 0" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="background: #f5f5f5;">
+            <th style="padding: 10px; border-bottom: 1px solid #ddd;">Fecha</th>
+            <th style="padding: 10px; border-bottom: 1px solid #ddd;">Hora</th>
+            <th style="padding: 10px; border-bottom: 1px solid #ddd;">Médico</th>
+            <th style="padding: 10px; border-bottom: 1px solid #ddd;">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cita of historial()">
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ cita.fecha }}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ cita.hora }}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ cita.medicoNombre }}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">
+              <span style="background: #ffe0b2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                {{ cita.estado }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

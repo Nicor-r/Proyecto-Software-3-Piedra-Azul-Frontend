@@ -33,6 +33,7 @@ export class Login {
     this.showPassword = !this.showPassword;
   }
 
+
   onSubmit(): void {
     this.mensajeExito.set('');
     this.mensajeError.set('');
@@ -49,13 +50,16 @@ export class Login {
     const rememberMe = this.loginForm.get('rememberMe')?.value ?? false;
 
     this.auth.login(request, rememberMe).subscribe({
-      next: () => {
+      next: (response: any) => {
+        localStorage.setItem('token', response.token);
         this.mensajeExito.set('Sesión iniciada correctamente');
         setTimeout(() => {
           if (this.auth.isAdmin()) {
             this.router.navigate(['/admin/configuracion']);
           } else if (this.auth.isAgendador()) {
             this.router.navigate(['/agendador/citas']);
+          } else if (this.auth.isTherapist()) {
+            this.router.navigate(['/terapista/dashboard']);
           } else {
             this.router.navigate(['/']);
           }

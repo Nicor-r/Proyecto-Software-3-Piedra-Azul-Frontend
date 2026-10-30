@@ -19,7 +19,7 @@
         <p class="hora">{{ formatearHora(c.hora) }}</p>
       </div>
       <div class="info-secundaria">
-        <span class="medico">Médico #{{ c.medicoId }}</span>
+        <span class="medico">{{ c.medicoNombre }}</span>
         <span class="estado" [ngClass]="'estado-' + c.estado.toLowerCase()">
           {{ c.estado }}
         </span>

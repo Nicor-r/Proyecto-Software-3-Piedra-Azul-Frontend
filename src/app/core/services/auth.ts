@@ -55,6 +55,28 @@ export class Auth {
     );
   }
 
+  // Agrégalo dentro de tu clase Auth, junto a isAdmin() e isAgendador()
+
+  // Agrega este método dentro de tu clase Auth
+
+  isTherapist(): boolean {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.log('No hay token en localStorage');
+      return false;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Payload del token decodificado:', payload);
+      return payload.role === 'THERAPIST';
+    } catch (e) {
+      console.error('Error al decodificar el token:', e);
+      return false;
+    }
+  }
+
   logout(): void {
     if (!this.isBrowser) {
       return;

@@ -11,6 +11,11 @@ import { Configuracion } from './admin/configuracion/configuracion';
 import { AgendadorLayout } from './agendador/layout/agendador-layout';
 import { CitasAgendador } from './agendador/citas/citas-agendador';
 import { TerapistaDashboard } from './features/terapista-dashboard/terapista-dashboard';
+import { medicoGuard } from './core/guards/medico.guard';
+import { MedicoLayout } from './medico/layout/medico-layout';
+import { HistorialMedico } from './medico/historial/historial-medico';
+import { ExportarMedico } from './medico/exportar/exportar-medico';
+
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -46,6 +51,16 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'citas' },
       { path: 'citas', component: CitasAgendador },
+    ],
+  },
+  {
+    path: 'medico',
+    component: MedicoLayout,
+    canActivate: [medicoGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'historial' },
+      { path: 'historial', component: HistorialMedico },
+      { path: 'exportar', component: ExportarMedico },
     ],
   },
   { path: '**', redirectTo: '' },

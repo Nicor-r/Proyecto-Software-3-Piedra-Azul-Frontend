@@ -1,0 +1,62 @@
+<div class="exportar-vista">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Exportar citas</h2>
+    <p class="vista__subtitulo">
+      Descarga tus citas de una fecha en un archivo CSV compatible con Excel, para organizar el ingreso de los pacientes a consulta.
+    </p>
+  </header>
+
+  <!-- Errores devueltos por el backend (HU-4 escenarios 2 y 4, HU-4.1 escenario 3) -->
+  <div class="alerta alerta--error" *ngIf="mensajeError()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
+  </div>
+
+  <!-- Descarga exitosa (HU-4 escenario 1) -->
+  <div class="alerta alerta--exito" *ngIf="mensajeExito()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+    <span>{{ mensajeExito() }}</span>
+  </div>
+
+  <section class="tarjeta-filtro">
+    <form [formGroup]="formulario" (ngSubmit)="exportar()" class="formulario-filtro" novalidate>
+      <!-- Médico fijo: quien inició sesión -->
+      <div class="campo-grupo">
+        <label for="medico">Médico / Terapista</label>
+        <input id="medico" type="text" class="campo-solo-lectura" [value]="nombreMedico()" readonly />
+      </div>
+
+      <!-- Fecha (obligatoria) -->
+      <div class="campo-grupo">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" type="date" formControlName="fecha" [class.campo--invalido]="fechaInvalida()" />
+        <span class="campo-error" *ngIf="fechaInvalida()">{{ mensajes.filtroIncompleto }}</span>
+      </div>
+
+      <!-- Estado (HU-4.1) -->
+      <div class="campo-grupo">
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          <option *ngFor="let opcion of estados" [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+        </select>
+      </div>
+
+      <div class="campo-grupo campo-grupo--boton">
+        <button type="submit" class="btn-buscar" [disabled]="exportando()">
+          {{ exportando() ? 'Generando...' : 'Exportar CSV' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <p class="nota-exportacion">
+    El archivo incluye Hora, Paciente, Cédula, Teléfono y Estado, ordenado por hora y separado por punto y coma (;).
+  </p>
+</div>

@@ -1,0 +1,131 @@
+<div class="historial-vista">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Historial de pacientes</h2>
+    <p class="vista__subtitulo">
+      Consulta las citas que ha tenido un paciente a partir de su número de cédula.
+    </p>
+  </header>
+
+  <!-- Búsqueda por cédula -->
+  <section class="tarjeta-filtro">
+    <form [formGroup]="formulario" (ngSubmit)="buscar()" class="formulario-filtro" novalidate>
+      <div class="campo-grupo">
+        <label for="cedula">Cédula del paciente</label>
+
+        <div class="campo-autocompletar">
+          <input
+            id="cedula"
+            type="text"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="off"
+            placeholder="Ej: 1061000001"
+            formControlName="cedula"
+            [class.campo--invalido]="mensajeCampoCedula()"
+            (input)="alEscribirCedula($any($event.target).value)"
+            (blur)="ocultarSugerencias()"
+            (keydown.escape)="ocultarSugerencias()"
+          />
+
+          <!-- HU-5.1 escenario 1: hasta 10 pacientes con cédula y nombre -->
+          <ul class="sugerencias" *ngIf="sugerencias().length > 0" role="listbox">
+            <li
+              *ngFor="let sugerencia of sugerencias()"
+              class="sugerencias__item"
+              role="option"
+              (mousedown)="$event.preventDefault()"
+              (click)="seleccionarSugerencia(sugerencia)"
+            >
+              <span class="sugerencias__cedula">{{ sugerencia.cedula }}</span>
+              <span class="sugerencias__nombre">{{ sugerencia.nombreCompleto }}</span>
+            </li>
+          </ul>
+
+          <!-- HU-5.1 escenario 3: sin coincidencias -->
+          <div class="sugerencias sugerencias--vacia" *ngIf="sinCoincidencias()">
+            {{ mensajes.sinCoincidencias }}
+          </div>
+        </div>
+
+        <span class="campo-error" *ngIf="mensajeCampoCedula() as mensaje">{{ mensaje }}</span>
+      </div>
+
+      <div class="campo-grupo campo-grupo--boton">
+        <button type="submit" class="btn-buscar" [disabled]="cargando()">
+          {{ cargando() ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- HU-5 escenario 3: error devuelto por el backend -->
+  <div class="alerta alerta--error" *ngIf="mensajeError()">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
+  </div>
+
+  <!-- HU-5 escenarios 1 y 2: resultado de la búsqueda -->
+  <ng-container *ngIf="historial() as resultado">
+    <div class="paciente-resumen">
+      <span class="paciente-resumen__etiqueta">Paciente</span>
+      <strong class="paciente-resumen__nombre">{{ resultado.nombrePaciente }}</strong>
+      <span class="paciente-resumen__cedula">C.C. {{ resultado.cedula }}</span>
+    </div>
+
+    <div class="conteo-resultados">
+      <strong>{{ resultado.total }}</strong> citas registradas
+    </div>
+
+    <!-- Escenario 2: paciente sin citas -->
+    <div class="alerta alerta--info" *ngIf="resultado.total === 0">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <span>{{ mensajes.sinCitas }}</span>
+    </div>
+
+    <!-- Escenario 1: tabla de la más reciente a la más antigua (orden del backend) -->
+    <div class="tabla-contenedor" *ngIf="resultado.total > 0">
+      <table class="tabla-citas">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Médico / Terapista</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cita of resultado.citas">
+            <td>{{ formatearFecha(cita.fecha) }}</td>
+            <td>{{ formatearHora(cita.hora) }}</td>
+            <td>{{ cita.medicoNombre }}</td>
+            <td>
+              <span [class]="claseEstado(cita.estado)">{{ textoEstado(cita.estado) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

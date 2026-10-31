@@ -1,0 +1,74 @@
+<div class="medico-contenedor">
+  <!-- Barra lateral (Sidebar) -->
+  <aside class="sidebar">
+    <div class="sidebar__marca">
+      <span class="sidebar__icono-marca">PA</span>
+      <span class="sidebar__nombre-marca">Piedra Azul</span>
+    </div>
+
+    <nav class="sidebar__menu" aria-label="Menú del médico">
+      <a
+        *ngFor="let item of menu"
+        class="sidebar__item"
+        [routerLink]="item.ruta"
+        routerLinkActive="sidebar__item--activo"
+      >
+        <span class="sidebar__icono" [ngSwitch]="item.icono">
+          <!-- Historial: reloj -->
+          <svg *ngSwitchCase="'historial'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <!-- Exportar: descarga -->
+          <svg *ngSwitchCase="'exportar'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </span>
+        <span class="sidebar__etiqueta">{{ item.etiqueta }}</span>
+      </a>
+    </nav>
+
+    <!-- Usuario en parte inferior del sidebar -->
+    <div class="sidebar__usuario">
+      <div class="sidebar__usuario-info">
+        <div class="avatar-circular avatar-circular--oscuro">{{ iniciales() }}</div>
+        <div class="sidebar__usuario-textos">
+          <strong class="sidebar__usuario-nombre">{{ nombreCorto() }}</strong>
+          <span class="sidebar__usuario-rol">{{ especialidad() }}</span>
+        </div>
+      </div>
+      <button class="sidebar__btn-salir" type="button" (click)="cerrarSesion()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Área de contenido principal -->
+  <div class="principal">
+    <header class="topbar">
+      <div class="topbar__centro">
+        <h1 class="topbar__titulo">Piedra Azul</h1>
+        <p class="topbar__subtitulo">Panel Médico</p>
+      </div>
+      <div class="topbar__usuario">
+        <div class="avatar-circular avatar-circular--oscuro">{{ iniciales() }}</div>
+        <span class="topbar__usuario-nombre">{{ nombreCorto() }}, Médico</span>
+      </div>
+    </header>
+
+    <main class="principal__cuerpo">
+      <router-outlet></router-outlet>
+    </main>
+
+    <footer class="footer-global">
+      © 2026 Piedra Azul. Todos los derechos reservados.
+    </footer>
+  </div>
+</div>

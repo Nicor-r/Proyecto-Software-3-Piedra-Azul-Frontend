@@ -58,6 +58,8 @@ export class Login {
             this.router.navigate(['/admin/configuracion']);
           } else if (this.auth.isAgendador()) {
             this.router.navigate(['/agendador/citas']);
+          } else if (this.auth.isMedico()) {
+            this.router.navigate(['/medico']);
           } else if (this.auth.isTherapist()) {
             this.router.navigate(['/terapista/dashboard']);
           } else {

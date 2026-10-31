@@ -55,9 +55,6 @@ export class Auth {
     );
   }
 
-  // Agrégalo dentro de tu clase Auth, junto a isAdmin() e isAgendador()
-
-  // Agrega este método dentro de tu clase Auth
 
   isTherapist(): boolean {
     const token = localStorage.getItem('token');
@@ -127,6 +124,10 @@ export class Auth {
 
   isAgendador(): boolean {
     return this.getRole() === 'AGENDADOR';
+  }
+
+  isMedico(): boolean {
+    return this.getRole() === 'MEDICO';
   }
 
   getUserEmail(): string | null {

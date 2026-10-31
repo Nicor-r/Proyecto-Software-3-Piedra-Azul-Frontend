@@ -10,11 +10,13 @@ import { AdminLayout } from './admin/layout/admin-layout';
 import { Configuracion } from './admin/configuracion/configuracion';
 import { AgendadorLayout } from './agendador/layout/agendador-layout';
 import { CitasAgendador } from './agendador/citas/citas-agendador';
-import { TerapistaDashboard } from './features/terapista-dashboard/terapista-dashboard';
+import { HistorialTerapista } from './features/terapista/historial/historial-terapista';
+import { ExportarTerapista } from './features/terapista/exportar/exportar-terapista';
 import { medicoGuard } from './core/guards/medico.guard';
 import { MedicoLayout } from './medico/layout/medico-layout';
 import { HistorialMedico } from './medico/historial/historial-medico';
 import { ExportarMedico } from './medico/exportar/exportar-medico';
+import { TerapistaLayout } from './features/terapista/layout/terapista-layout';
 
 
 export const routes: Routes = [
@@ -41,9 +43,14 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'terapista/dashboard',
-    component: TerapistaDashboard,
-    canActivate: [authGuard] // Agrega terapistaGuard si lo creaste
+    path: 'terapista',
+    component: TerapistaLayout, // El esqueleto
+    canActivate: [authGuard],   // Protegido
+    children: [
+      { path: '', redirectTo: 'historial', pathMatch: 'full' }, // Por defecto muestra historial
+      { path: 'historial', component: HistorialTerapista },
+      { path: 'exportar', component: ExportarTerapista }
+    ]
   },
   {
     path: 'agendador',

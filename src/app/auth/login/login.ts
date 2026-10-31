@@ -61,7 +61,7 @@ export class Login {
           } else if (this.auth.isMedico()) {
             this.router.navigate(['/medico']);
           } else if (this.auth.isTherapist()) {
-            this.router.navigate(['/terapista/dashboard']);
+            this.router.navigate(['/terapista/historial'], { replaceUrl: true });
           } else {
             this.router.navigate(['/']);
           }

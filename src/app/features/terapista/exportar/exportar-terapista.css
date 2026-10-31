@@ -1,0 +1,19 @@
+/* Médico fijo: se muestra pero no se puede cambiar (exporta solo sus citas) */
+.campo-solo-lectura {
+  background-color: #f0f4f8 !important;
+  color: #486581 !important;
+  cursor: default;
+}
+
+/* Mensaje de descarga exitosa */
+.alerta--exito {
+  background-color: #eafaf1;
+  color: #237847;
+  border: 1px solid #c0ebcb;
+}
+
+.nota-exportacion {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #627d98;
+}

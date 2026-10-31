@@ -1,0 +1,247 @@
+:host {
+  display: block;
+}
+
+/* Encabezado de la vista */
+.vista__encabezado {
+  margin-bottom: 1.75rem;
+}
+.vista__titulo {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #152e3d;
+  letter-spacing: -0.02em;
+}
+.vista__subtitulo {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  color: #5c7082;
+}
+
+/* Alertas */
+.alerta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.92rem;
+}
+.alerta svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
+}
+.alerta--error {
+  background-color: #fde8e8;
+  color: #9b1c1c;
+  border: 1px solid #f8b4b4;
+}
+.alerta--info {
+  background-color: #e1effe;
+  color: #1e429f;
+  border: 1px solid #b3d5fd;
+}
+
+/* Tarjeta de filtros */
+.tarjeta-filtro {
+  background-color: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+.formulario-filtro {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.campo-grupo {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.campo-grupo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #486581;
+  margin-bottom: 0.45rem;
+}
+.campo-grupo input,
+.campo-grupo select {
+  width: 100%;
+  height: 44px;
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  border: 1px solid #cbd2d9;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: #1e3d54;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.campo-grupo input:focus,
+.campo-grupo select:focus {
+  border-color: #729ebc;
+  box-shadow: 0 0 0 3px rgba(114, 158, 188, 0.2);
+}
+
+/* Campo con error (HU-5 escenarios 4 y 5: "resaltando el campo") */
+.campo--invalido {
+  border-color: #e02424 !important;
+  box-shadow: 0 0 0 3px rgba(224, 36, 36, 0.12) !important;
+}
+.campo-error {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  color: #c53030;
+}
+
+.campo-grupo--boton {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-top: 1.5rem;
+}
+.btn-buscar {
+  height: 44px;
+  background-color: #17374b;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0 2.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.btn-buscar:hover:not(:disabled) {
+  background-color: #0f2736;
+}
+.btn-buscar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Resumen del paciente */
+.paciente-resumen {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.paciente-resumen__etiqueta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #486581;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.paciente-resumen__nombre {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.35rem;
+  color: #152e3d;
+}
+.paciente-resumen__cedula {
+  font-size: 0.9rem;
+  color: #5c7082;
+}
+
+/* Conteo */
+.conteo-resultados {
+  font-size: 0.95rem;
+  color: #5c7082;
+  margin-bottom: 0.85rem;
+}
+.conteo-resultados strong {
+  font-size: 1.05rem;
+  color: #152e3d;
+}
+
+/* Tabla */
+.tabla-contenedor {
+  background-color: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.tabla-citas {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.tabla-citas thead {
+  background-color: #152e3d;
+  color: #ffffff;
+}
+.tabla-citas th {
+  padding: 1.05rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.tabla-citas tbody tr {
+  border-bottom: 1px solid #edf2f7;
+}
+.tabla-citas tbody tr:hover {
+  background-color: #f8fafc;
+}
+.tabla-citas td {
+  padding: 1rem 1.25rem;
+  font-size: 0.92rem;
+  color: #1e3d54;
+}
+
+/* Pastillas de estado */
+.badge-estado {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge-estado--confirmada {
+  background-color: #e6f0f8;
+  color: #21618c;
+  border: 1px solid #c5dcf0;
+}
+.badge-estado--pendiente {
+  background-color: #fef5e7;
+  color: #b7791f;
+  border: 1px solid #fae5be;
+}
+.badge-estado--completada {
+  background-color: #eafaf1;
+  color: #237847;
+  border: 1px solid #c0ebcb;
+}
+.badge-estado--cancelada {
+  background-color: #fde8e8;
+  color: #c53030;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 768px) {
+  .formulario-filtro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .campo-grupo--boton {
+    padding-top: 0;
+  }
+  .btn-buscar {
+    width: 100%;
+  }
+}

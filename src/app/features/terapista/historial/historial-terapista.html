@@ -1,0 +1,68 @@
+<div class="contenido-header">
+  <h1>Historial de pacientes</h1>
+  <p>Consulta las citas que ha tenido un paciente a partir de su número de cédula.</p>
+</div>
+
+<div class="tarjeta-busqueda">
+  <form [formGroup]="formulario" (ngSubmit)="buscar()">
+    <label for="cedula">Cédula del paciente</label>
+    
+    <div class="input-group" style="display: flex; gap: 1rem; align-items: center; position: relative;">
+      <input 
+        id="cedula" 
+        type="text" 
+        formControlName="cedula"
+        (input)="alEscribirCedula($any($event.target).value)"
+        placeholder="Ej: 1061000001"
+        autocomplete="off"
+        style="flex: 1; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
+        
+      <button type="submit" [disabled]="cargando()" class="btn-primario">
+        {{ cargando() ? 'Buscando...' : 'Buscar' }}
+      </button>
+
+      <!-- Sugerencias Autocompletado -->
+      <ul class="lista-sugerencias" *ngIf="sugerencias().length > 0" 
+          style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; z-index: 10; list-style: none; padding: 0; margin: 0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <li *ngFor="let sug of sugerencias()" (click)="seleccionarSugerencia(sug)" 
+            style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+          {{ sug.nombreCompleto }} - {{ sug.cedula }}
+        </li>
+      </ul>
+    </div>
+    
+    <small class="text-danger" *ngIf="mensajeCampoCedula()" style="color: #d32f2f; display: block; margin-top: 0.5rem;">
+      {{ mensajeCampoCedula() }}
+    </small>
+  </form>
+</div>
+
+<p *ngIf="mensajeError()" class="mensaje-alerta" style="color: #d32f2f; margin-top: 1rem;">
+  {{ mensajeError() }}
+</p>
+
+<!-- Tabla de resultados -->
+<div class="tabla-contenedor" *ngIf="historial().length > 0" style="margin-top: 2rem;">
+  <table style="width: 100%; border-collapse: collapse; text-align: left;">
+    <thead>
+      <tr style="border-bottom: 2px solid #ccc;">
+        <th style="padding: 1rem;">Fecha</th>
+        <th style="padding: 1rem;">Hora</th>
+        <th style="padding: 1rem;">Médico / Terapista</th>
+        <th style="padding: 1rem;">Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cita of historial()" style="border-bottom: 1px solid #eee;">
+        <td style="padding: 1rem;">{{ cita.fecha }}</td>
+        <td style="padding: 1rem;">{{ cita.hora }}</td>
+        <td style="padding: 1rem;">{{ cita.medicoNombre }}</td>
+        <td style="padding: 1rem;">
+          <span class="badge" style="background: #ffeeba; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
+            {{ cita.estado }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

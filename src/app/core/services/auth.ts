@@ -66,6 +66,7 @@ export class Auth {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Rol detectado en Auth:', payload.role); 
       console.log('Payload del token decodificado:', payload);
       return payload.role === 'THERAPIST';
     } catch (e) {

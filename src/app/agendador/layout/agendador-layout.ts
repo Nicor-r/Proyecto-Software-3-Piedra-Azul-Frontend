@@ -6,7 +6,7 @@ import { Auth } from '../../core/services/auth';
 interface MenuItem {
   etiqueta: string;
   ruta?: string;
-  icono: 'resumen' | 'citas' | 'medicos' | 'pacientes';
+  icono: 'resumen' | 'citas' | 'medicos' | 'pacientes' | 'historial' | 'exportar';
 }
 
 @Component({
@@ -23,6 +23,8 @@ export class AgendadorLayout {
   readonly menu: MenuItem[] = [
     { etiqueta: 'Resumen', icono: 'resumen' },
     { etiqueta: 'Citas por medico', ruta: '/agendador/citas', icono: 'citas' },
+    { etiqueta: 'Historial de pacientes', ruta: '/agendador/historial', icono: 'historial' },
+    { etiqueta: 'Exportar citas', ruta: '/agendador/exportar', icono: 'exportar' },
     { etiqueta: 'Médicos y terapistas', icono: 'medicos' },
     { etiqueta: 'Pacientes', icono: 'pacientes' },
   ];

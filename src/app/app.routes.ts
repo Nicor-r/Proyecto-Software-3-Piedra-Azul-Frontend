@@ -17,6 +17,8 @@ import { MedicoLayout } from './medico/layout/medico-layout';
 import { HistorialMedico } from './medico/historial/historial-medico';
 import { ExportarMedico } from './medico/exportar/exportar-medico';
 import { TerapistaLayout } from './features/terapista/layout/terapista-layout';
+import { ExportarAgendador } from './agendador/exportar/exportar-agendador';
+import { HistorialAgendador } from './agendador/historial/historial-agendador';
 
 
 export const routes: Routes = [
@@ -52,13 +54,15 @@ export const routes: Routes = [
       { path: 'exportar', component: ExportarTerapista }
     ]
   },
-  {
+    {
     path: 'agendador',
     component: AgendadorLayout,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'citas' },
+      { path: '', redirectTo: 'citas', pathMatch: 'full' },
       { path: 'citas', component: CitasAgendador },
-    ],
+      { path: 'historial', component: HistorialAgendador },
+      { path: 'exportar', component: ExportarAgendador }
+    ]
   },
   {
     path: 'medico',

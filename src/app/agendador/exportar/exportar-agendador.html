@@ -1,0 +1,28 @@
+<div class="contenido-header">
+  <h1>Exportar citas</h1>
+  <p>Descarga el listado de pacientes agendados para un médico específico.</p>
+</div>
+
+<div class="tarjeta-busqueda" style="padding: 2rem;">
+  <div style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
+    
+    <div style="flex: 1; min-width: 200px;">
+      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Médico / Terapista</label>
+      <select [(ngModel)]="medicoSeleccionado" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
+        <option value="">Seleccione un especialista</option>
+        <option *ngFor="let m of medicos()" [value]="m.id">{{ m.nombre }}</option>
+      </select>
+    </div>
+
+    <div style="flex: 1; min-width: 150px;">
+      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fecha</label>
+      <input type="date" [(ngModel)]="fechaExportar" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
+    </div>
+
+    <div>
+      <button (click)="descargarCSV()" [disabled]="!fechaExportar || !medicoSeleccionado || exportando()" class="btn-primario" style="padding: 0.75rem 1.5rem;">
+        {{ exportando() ? 'Generando...' : 'Exportar CSV' }}
+      </button>
+    </div>
+  </div>
+</div>

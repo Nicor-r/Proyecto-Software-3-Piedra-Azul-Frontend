@@ -6,7 +6,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, of } from 'rxjs';
 import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 import { CitasService, Cita } from '../../../core/services/citas';
-import { MedicoService, PacienteSugerencia } from '../../../core/services/medico'; // Si tienes el servicio de sugerencias
+import { MedicoService, PacienteSugerencia } from '../../../core/services/medico';
 
 export const MENSAJES_HISTORIAL = {
   cedulaVacia: 'Debe ingresar el número de cédula',

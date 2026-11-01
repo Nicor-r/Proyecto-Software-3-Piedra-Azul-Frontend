@@ -1,12 +1,8 @@
 import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import {
-  AgendadorService,
-  CitaAgendadorItem,
-  DoctorItem,
-  ListadoCitasResponse
-} from '../../core/services/agendador';
+import { AgendadorService, CitaAgendadorItem, DoctorItem, ListadoCitasResponse} from '../../core/services/agendador';
+import { CitasService } from '../../core/services/citas'; // <-- Agrega esta línea
 
 @Component({
   selector: 'app-citas-agendador',
@@ -18,6 +14,7 @@ import {
 export class CitasAgendador implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly agendadorService = inject(AgendadorService);
+  private readonly citasService = inject(CitasService);
 
   filtroForm: FormGroup;
   doctores = signal<DoctorItem[]>([]);
@@ -51,13 +48,14 @@ export class CitasAgendador implements OnInit {
     }
   }
 
-  cargarDoctores(): void {
-    this.agendadorService.listarDoctores().subscribe({
+    cargarDoctores(): void {
+    // Usamos el CitasService que ya une médicos y terapistas
+    this.citasService.obtenerDoctores().subscribe({
       next: (docs) => {
         this.doctores.set(docs);
       },
       error: () => {
-        // En caso de fallo de red, usamos doctores de respaldo
+        // Mantenemos el respaldo por si falla la red
         this.doctores.set([
           { id: 'doc-1', nombre: 'Dra. Ana Martinez - Medicina General', activo: true },
           { id: 'doc-2', nombre: 'Dr. Carlos Ruiz - Fisioterapia', activo: true },

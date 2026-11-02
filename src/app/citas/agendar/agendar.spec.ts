@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { AgendarCita } from './agendar';
 import { CitasService } from '../../core/services/citas';
+import { provideToastr } from '@iqx-limited/ngx-toastr';
 
 describe('AgendarCita', () => {
   let component: AgendarCita;
@@ -24,6 +25,7 @@ describe('AgendarCita', () => {
       providers: [
         provideHttpClient(),
         provideRouter([]),
+        provideToastr(),
         { provide: CitasService, useValue: mockCitasService }
       ],
     }).compileComponents();

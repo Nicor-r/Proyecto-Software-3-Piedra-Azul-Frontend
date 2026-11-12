@@ -1,0 +1,92 @@
+<div class="reporte-vista">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Citas por mes</h2>
+    <p class="vista__subtitulo">
+      Analiza la cantidad de citas agendadas por mes y médico para un año específico.
+    </p>
+  </header>
+
+  @if (mensajeError()) {
+    <div class="alerta alerta--error" role="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span>{{ mensajeError() }}</span>
+    </div>
+  }
+
+  <section class="tarjeta-filtro">
+    <form [formGroup]="formulario" (ngSubmit)="buscar()" class="formulario-filtro" novalidate>
+      <div class="campo-grupo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" formControlName="tipo">
+          <option value="POR_MES">Por mes</option>
+          <option value="POR_DOCTOR" disabled title="Próximamente">Por doctor</option>
+        </select>
+      </div>
+
+      <div class="campo-grupo">
+        <label for="medicoId">Médico</label>
+        <select id="medicoId" formControlName="medicoId">
+          <option value="">Todos</option>
+          @for (prof of profesionales(); track prof.id) {
+            <option [value]="prof.id">{{ prof.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo-grupo campo-grupo--anio">
+        <label for="anio">Año</label>
+        <input
+          id="anio"
+          type="number"
+          formControlName="anio"
+          min="2000"
+          max="2100"
+          [class.campo--invalido]="anioInvalido()"
+        />
+        @if (anioInvalido()) {
+          <span class="campo-error">{{ mensajeAnio() }}</span>
+        }
+      </div>
+
+      <div class="campo-grupo campo-grupo--boton campo-grupo--acciones">
+        <button type="submit" class="btn-buscar" [disabled]="cargando()">
+          {{ cargando() ? 'Buscando...' : 'Buscar' }}
+        </button>
+        <button type="button" class="btn-cerrar" (click)="cerrar()">
+          Cerrar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (cargando()) {
+    <div class="estado-carga" role="status" aria-live="polite">
+      <span class="estado-carga__spinner" aria-hidden="true"></span>
+      <span>Cargando reporte de citas...</span>
+    </div>
+  } @else if (sinDatos()) {
+    <div class="alerta alerta--info">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <span>No se encontraron citas registradas para el año {{ anioMostrado() }} con los filtros seleccionados.</span>
+    </div>
+  } @else if (datosGrafico(); as datos) {
+    <section class="tarjeta-grafico">
+      <h3 class="tarjeta-grafico__titulo">
+        Cantidad de Citas por Mes y Médico en {{ anioMostrado() }}
+      </h3>
+      <app-grafico-barras
+        [datos]="datos"
+        [opciones]="opcionesGrafico"
+        [ariaLabel]="'Cantidad de Citas por Mes y Médico en ' + anioMostrado()"
+      />
+    </section>
+  }
+</div>

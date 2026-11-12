@@ -7,7 +7,7 @@ import { MedicoService } from '../../core/services/medico';
 interface ItemMenu {
   etiqueta: string;
   ruta: string;
-  icono: 'historial' | 'exportar';
+  icono: 'historial' | 'exportar' | 'reportes';
 }
 
 /**
@@ -30,6 +30,7 @@ export class MedicoLayout implements OnInit {
   readonly menu: ItemMenu[] = [
     { etiqueta: 'Historial de pacientes', ruta: '/medico/historial', icono: 'historial' },
     { etiqueta: 'Exportar citas', ruta: '/medico/exportar', icono: 'exportar' },
+    { etiqueta: 'Reportes', ruta: '/medico/reportes', icono: 'reportes' },
   ];
 
   /** Nombre completo de la ficha, ej. "Dra. Ibis González - Cardiología". */

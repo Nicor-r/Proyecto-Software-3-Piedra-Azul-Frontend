@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.grafico-contenedor {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+}

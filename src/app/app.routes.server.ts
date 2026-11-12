@@ -1,9 +1,13 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
-  // NUEVO: el panel del medico depende del token del navegador; se arma en el cliente
+  // Los paneles autenticados dependen del token y/o canvas del navegador; se renderizan en cliente (SSR-safe).
   { path: 'medico', renderMode: RenderMode.Client },
   { path: 'medico/**', renderMode: RenderMode.Client },
+  { path: 'terapista', renderMode: RenderMode.Client },
+  { path: 'terapista/**', renderMode: RenderMode.Client },
+  { path: 'admin', renderMode: RenderMode.Client },
+  { path: 'admin/**', renderMode: RenderMode.Client },
   {
     path: '**',
     renderMode: RenderMode.Prerender

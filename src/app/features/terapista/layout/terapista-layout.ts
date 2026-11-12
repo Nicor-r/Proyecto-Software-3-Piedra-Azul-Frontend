@@ -23,7 +23,8 @@ export class TerapistaLayout {
 
     menu = [
         { etiqueta: 'Historial de pacientes', ruta: '/terapista/historial', icono: 'historial' },
-        { etiqueta: 'Exportar citas', ruta: '/terapista/exportar', icono: 'exportar' }
+        { etiqueta: 'Exportar citas', ruta: '/terapista/exportar', icono: 'exportar' },
+        { etiqueta: 'Reportes', ruta: '/terapista/reportes', icono: 'reportes' }
     ];
 
     // NOTA: Como el token JWT solo guarda el email y el rol, 

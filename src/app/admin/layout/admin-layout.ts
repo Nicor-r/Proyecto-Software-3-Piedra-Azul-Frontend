@@ -28,7 +28,7 @@ export class AdminLayout {
     { etiqueta: 'Configuración', ruta: '/admin/configuracion', icono: 'configuracion' },
     { etiqueta: 'Médicos y terapistas', icono: 'medicos' },
     { etiqueta: 'Citas', icono: 'citas' },
-    { etiqueta: 'Reportes', icono: 'reportes' },
+    { etiqueta: 'Reportes', ruta: '/admin/reportes', icono: 'reportes' },
   ];
 
   cerrarSesion(): void {

@@ -42,6 +42,11 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'configuracion' },
       { path: 'configuracion', component: Configuracion },
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import('./shared/reportes/reporte-citas/reporte-citas').then((m) => m.ReporteCitasComponent),
+      },
     ],
   },
   {
@@ -51,7 +56,12 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'historial', pathMatch: 'full' }, // Por defecto muestra historial
       { path: 'historial', component: HistorialTerapista },
-      { path: 'exportar', component: ExportarTerapista }
+      { path: 'exportar', component: ExportarTerapista },
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import('./shared/reportes/reporte-citas/reporte-citas').then((m) => m.ReporteCitasComponent),
+      },
     ]
   },
     {
@@ -72,6 +82,11 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'historial' },
       { path: 'historial', component: HistorialMedico },
       { path: 'exportar', component: ExportarMedico },
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import('./shared/reportes/reporte-citas/reporte-citas').then((m) => m.ReporteCitasComponent),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

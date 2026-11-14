@@ -3,6 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { PacienteSugerencia } from './medico';
+
+export type { PacienteSugerencia } from './medico';
 
 export interface Doctor {
   id: string;
@@ -85,6 +88,12 @@ export class CitasService {
   // 1. Consultar historial por cédula
   obtenerHistorialPaciente(cedula: string): Observable<Cita[]> {
     return this.http.get<Cita[]>(`${this.apiUrl}/paciente/${cedula}`);
+  }
+
+  // Autocompletado compartido de pacientes por prefijo de cédula
+  sugerirPacientes(cedula: string): Observable<PacienteSugerencia[]> {
+    const params = new HttpParams().set('cedula', cedula);
+    return this.http.get<PacienteSugerencia[]>(`${this.apiUrl}/pacientes/sugerencias`, { params });
   }
 
   // 2. Exportar CSV por fecha (el backend deduce el terapista del token)

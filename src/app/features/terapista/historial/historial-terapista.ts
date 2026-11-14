@@ -5,16 +5,21 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, of } from 'rxjs';
 import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
-import { CitasService, Cita } from '../../../core/services/citas';
-import { MedicoService, PacienteSugerencia } from '../../../core/services/medico';
+import { Cita, CitasService } from '../../../core/services/citas';
+import { HistorialPaciente, PacienteSugerencia } from '../../../core/services/medico';
+import { claseEstado, formatearFecha, formatearHora, textoEstado } from '../../../medico/formato-cita';
+import { leerMensajeDeError } from '../../../medico/leer-mensaje-error';
 
+/** Mensajes mostrados en la vista de historial de pacientes del terapista. */
 export const MENSAJES_HISTORIAL = {
   cedulaVacia: 'Debe ingresar el número de cédula',
   formatoInvalido: 'La cédula debe contener solo números, entre 6 y 10 dígitos',
   sinCitas: 'El paciente no tiene citas registradas',
+  sinCoincidencias: 'No se encontraron pacientes con esa cédula',
   errorGeneral: 'Ocurrió un error al consultar el historial. Intenta de nuevo.',
 } as const;
 
+/** Milisegundos que se espera sin teclas nuevas antes de pedir sugerencias. */
 export const ESPERA_SUGERENCIAS_MS = 300;
 
 interface ResultadoSugerencias {
@@ -22,17 +27,17 @@ interface ResultadoSugerencias {
   sugerencias: PacienteSugerencia[] | null;
 }
 
+/** Historial de citas de pacientes por cédula para el panel de terapista. */
 @Component({
   selector: 'app-historial-terapista',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './historial-terapista.html',
-  styleUrls: ['../estilos-terapista.css', './historial-terapista.css'], // Asegúrate de tener el CSS
+  styleUrls: ['../estilos-terapista.css', './historial-terapista.css'],
 })
 export class HistorialTerapista {
   private readonly fb = inject(FormBuilder);
   private readonly citasService = inject(CitasService);
-  private readonly medicoService = inject(MedicoService); // Para las sugerencias de cédula
 
   readonly mensajes = MENSAJES_HISTORIAL;
 
@@ -40,8 +45,7 @@ export class HistorialTerapista {
     cedula: ['', [Validators.required, Validators.pattern(/^\d{6,10}$/)]],
   });
 
-  // Usamos Cita[] directo porque tu backend devuelve eso
-  readonly historial = signal<Cita[]>([]);
+  readonly historial = signal<HistorialPaciente | null>(null);
   readonly cargando = signal(false);
   readonly mensajeError = signal('');
 
@@ -50,6 +54,12 @@ export class HistorialTerapista {
   readonly sinCoincidencias = signal(false);
   private readonly textoEscrito$ = new Subject<string>();
   private cedulaBuscada = '';
+
+  // Funciones de formato disponibles para la plantilla
+  readonly formatearFecha = formatearFecha;
+  readonly formatearHora = formatearHora;
+  readonly textoEstado = textoEstado;
+  readonly claseEstado = claseEstado;
 
   constructor() {
     this.textoEscrito$
@@ -66,11 +76,13 @@ export class HistorialTerapista {
     return this.formulario.controls.cedula;
   }
 
+  /** Se llama en cada tecla del campo cédula. */
   alEscribirCedula(texto: string): void {
     this.cedulaBuscada = '';
     this.textoEscrito$.next(texto);
   }
 
+  /** Completa el campo con la sugerencia seleccionada y consulta su historial. */
   seleccionarSugerencia(sugerencia: PacienteSugerencia): void {
     this.cedula.setValue(sugerencia.cedula);
     this.buscar();
@@ -81,6 +93,7 @@ export class HistorialTerapista {
     this.sinCoincidencias.set(false);
   }
 
+  /** Mensaje bajo el campo: solo si el usuario ya intentó buscar y el valor es inválido. */
   mensajeCampoCedula(): string {
     if (!this.cedula.touched || this.cedula.valid) {
       return '';
@@ -96,24 +109,27 @@ export class HistorialTerapista {
     this.ocultarSugerencias();
 
     if (this.cedula.invalid) {
-      this.historial.set([]);
+      this.historial.set(null);
       return;
     }
 
+    const cedulaConsultada = this.cedula.value;
     this.cargando.set(true);
-    // Usamos tu servicio de citas
-    this.citasService.obtenerHistorialPaciente(this.cedula.value).subscribe({
-      next: (citas) => {
-        this.historial.set(citas);
-        if (citas.length === 0) {
-           this.mensajeError.set(this.mensajes.sinCitas);
-        }
+    this.citasService.obtenerHistorialPaciente(cedulaConsultada).subscribe({
+      next: (citas: Cita[]) => {
+        this.historial.set({
+          cedula: cedulaConsultada,
+          nombrePaciente: citas[0]?.pacienteNombre ?? '',
+          total: citas.length,
+          citas,
+        });
         this.cargando.set(false);
       },
-      error: (error: HttpErrorResponse) => {
-        this.historial.set([]);
-        this.mensajeError.set(error.error?.message ?? this.mensajes.errorGeneral);
+      error: async (error: HttpErrorResponse) => {
+        this.historial.set(null);
         this.cargando.set(false);
+        const mensaje = await leerMensajeDeError(error, this.mensajes.errorGeneral);
+        this.mensajeError.set(mensaje || this.mensajes.errorGeneral);
       },
     });
   }
@@ -122,15 +138,16 @@ export class HistorialTerapista {
     if (!/^\d{3,10}$/.test(texto)) {
       return of({ texto, sugerencias: null });
     }
-    // Si tu compañero tiene el endpoint de sugerencias en MedicoService, lo reutilizamos
-    return this.medicoService.sugerirPacientes(texto).pipe(
+    return this.citasService.sugerirPacientes(texto).pipe(
       map((sugerencias) => ({ texto, sugerencias })),
       catchError(() => of({ texto, sugerencias: null }))
     );
   }
 
   private mostrarSugerencias(resultado: ResultadoSugerencias): void {
-    if (resultado.texto === this.cedulaBuscada) return;
+    if (resultado.texto === this.cedulaBuscada) {
+      return;
+    }
     if (resultado.sugerencias === null) {
       this.ocultarSugerencias();
       return;

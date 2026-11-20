@@ -19,7 +19,7 @@ import { ExportarMedico } from './medico/exportar/exportar-medico';
 import { TerapistaLayout } from './features/terapista/layout/terapista-layout';
 import { ExportarAgendador } from './agendador/exportar/exportar-agendador';
 import { HistorialAgendador } from './agendador/historial/historial-agendador';
-
+import { Resumen } from './admin/resumen/resumen';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -40,7 +40,8 @@ export const routes: Routes = [
     component: AdminLayout,
     canActivate: [adminGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'configuracion' },
+      { path: '', pathMatch: 'full', redirectTo: 'resumen' },
+      { path: 'resumen', component: Resumen },
       { path: 'configuracion', component: Configuracion },
       {
         path: 'reportes',

@@ -18,6 +18,8 @@
   font-family: 'Lexend', 'Segoe UI', system-ui, sans-serif;
   color: var(--texto);
   max-width: 60em;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .config * {

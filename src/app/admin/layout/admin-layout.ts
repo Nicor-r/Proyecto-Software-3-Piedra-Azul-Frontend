@@ -24,10 +24,8 @@ export class AdminLayout {
   // del menú se deja visible para que coincida con el diseño de Figma, pero
   // inactivo hasta que se desarrollen esas historias de usuario.
   menu: ItemMenu[] = [
-    { etiqueta: 'Resumen', icono: 'resumen' },
+    { etiqueta: 'Resumen', ruta: '/admin/resumen', icono: 'resumen' },
     { etiqueta: 'Configuración', ruta: '/admin/configuracion', icono: 'configuracion' },
-    { etiqueta: 'Médicos y terapistas', icono: 'medicos' },
-    { etiqueta: 'Citas', icono: 'citas' },
     { etiqueta: 'Reportes', ruta: '/admin/reportes', icono: 'reportes' },
   ];
 

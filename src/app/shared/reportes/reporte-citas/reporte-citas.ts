@@ -123,13 +123,13 @@ export class ReporteCitasComponent implements OnInit {
     } else if (rol === 'THERAPIST') {
       rutaDestino = '/terapista/historial';
     } else if (rol === 'ADMIN') {
-      rutaDestino = '/admin/configuracion';
+      rutaDestino = '/admin/resumen';
     } else if (this.router.url.startsWith('/medico')) {
       rutaDestino = '/medico/historial';
     } else if (this.router.url.startsWith('/terapista')) {
       rutaDestino = '/terapista/historial';
     } else if (this.router.url.startsWith('/admin')) {
-      rutaDestino = '/admin/configuracion';
+      rutaDestino = '/admin/resumen';
     }
 
     this.router.navigateByUrl(rutaDestino);

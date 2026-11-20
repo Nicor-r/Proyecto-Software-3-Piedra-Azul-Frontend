@@ -55,7 +55,7 @@ export class Login {
         this.mensajeExito.set('Sesión iniciada correctamente');
         setTimeout(() => {
           if (this.auth.isAdmin()) {
-            this.router.navigate(['/admin/configuracion']);
+            this.router.navigate(['/admin/resumen']);
           } else if (this.auth.isAgendador()) {
             this.router.navigate(['/agendador/citas']);
           } else if (this.auth.isMedico()) {

@@ -181,7 +181,7 @@ describe('ReporteCitasComponent', () => {
     expect(rutasNavegadas).toEqual([
       '/medico/historial',
       '/terapista/historial',
-      '/admin/configuracion',
+      '/admin/resumen',
     ]);
   });
 });

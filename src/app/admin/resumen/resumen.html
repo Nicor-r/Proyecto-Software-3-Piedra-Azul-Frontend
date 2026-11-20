@@ -1,0 +1,105 @@
+<div class="resumen">
+  <header class="resumen__encabezado">
+    <h2>Resumen</h2>
+    <p>Estado general del sistema de agendamiento en {{ nombreMesActual }} de {{ anioActual }}.</p>
+  </header>
+
+  @if (cargando()) {
+    <p class="resumen__vacio">Cargando resumen…</p>
+  } @else {
+    @if (errorProfesionales()) {
+      <p class="resumen__mensaje resumen__mensaje--error">{{ errorProfesionales() }}</p>
+    }
+    @if (errorCitas()) {
+      <p class="resumen__mensaje resumen__mensaje--error">{{ errorCitas() }}</p>
+    }
+
+    <!-- Tarjetas con los números principales -->
+    <section class="indicadores">
+      <article class="indicador">
+        <span class="indicador__etiqueta">Profesionales activos</span>
+        <strong class="indicador__valor">{{ totalActivos() }}</strong>
+        <span class="indicador__detalle">de {{ doctores().length }} registrados</span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Profesionales inactivos</span>
+        <strong class="indicador__valor">{{ totalInactivos() }}</strong>
+        <span class="indicador__detalle">no reciben citas</span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Citas en {{ nombreMesActual }}</span>
+        <strong class="indicador__valor">{{ citasMesActual() }}</strong>
+        <span class="indicador__detalle">mes actual</span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Citas en {{ anioActual }}</span>
+        <strong class="indicador__valor">{{ citasAnio() }}</strong>
+        <span class="indicador__detalle">en lo que va del año</span>
+      </article>
+    </section>
+
+    <!-- Aviso: profesionales activos que aún no tienen agenda -->
+    @if (sinAgenda().length > 0) {
+      <section class="aviso">
+        <div class="aviso__texto">
+          <strong>
+            {{ sinAgenda().length }}
+            {{ sinAgenda().length === 1 ? 'profesional activo no tiene' : 'profesionales activos no tienen' }}
+            agenda configurada
+          </strong>
+          <p>Los pacientes no podrán agendar con ellos hasta que se definan sus días, horario e intervalo.</p>
+          <div class="aviso__nombres">
+            @for (doctor of sinAgenda(); track doctor.id) {
+              <span class="chip">{{ doctor.nombre }}</span>
+            }
+          </div>
+        </div>
+        <a class="boton boton--primario" routerLink="/admin/configuracion">Configurar agenda</a>
+      </section>
+    } @else if (!errorProfesionales() && totalActivos() > 0) {
+      <section class="aviso aviso--ok">
+        <strong>Todos los profesionales activos tienen su agenda configurada.</strong>
+      </section>
+    }
+
+    <!-- Gráfico + profesionales con más citas -->
+    <div class="resumen__fila">
+      <section class="tarjeta tarjeta--grafico">
+        <h3>Citas por mes en {{ anioActual }}</h3>
+        @if (citasAnio() > 0) {
+          <app-grafico-barras
+            [datos]="datosGrafico()"
+            [opciones]="opcionesGrafico"
+            [ariaLabel]="'Cantidad de citas por mes en ' + anioActual"
+          />
+        } @else {
+          <p class="resumen__vacio">Todavía no hay citas registradas este año.</p>
+        }
+      </section>
+
+      <section class="tarjeta">
+        <h3>Con más citas este año</h3>
+        @if (topProfesionales().length > 0) {
+          <ol class="top">
+            @for (serie of topProfesionales(); track serie.medicoId; let i = $index) {
+              <li class="top__item">
+                <span class="top__posicion">{{ i + 1 }}</span>
+                <span class="top__datos">
+                  <strong>{{ serie.medicoNombre }}</strong>
+                  <span>{{ textoTipo(serie.tipoProfesional) }}</span>
+                </span>
+                <span class="top__total">{{ serie.totalAnual }}</span>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="resumen__vacio">Sin datos todavía.</p>
+        }
+        <a class="enlace" routerLink="/admin/reportes">Ver reporte completo →</a>
+      </section>
+    </div>
+  }
+</div>

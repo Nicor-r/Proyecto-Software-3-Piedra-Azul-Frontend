@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { TerapistaService } from '../../../core/services/terapista';
+import { calcularIniciales } from '../../../medico/layout/medico-layout';
 
 @Component({
     selector: 'app-terapista-layout',
@@ -35,7 +36,7 @@ export class TerapistaLayout {
 
     get iniciales() {
         const nombre = this.nombreCorto;
-        return nombre.substring(0, 2).toUpperCase();
+        return calcularIniciales(this.nombreCorto);
     }
 
     cerrarSesion(): void {

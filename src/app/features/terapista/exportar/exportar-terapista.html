@@ -1,57 +1,62 @@
-<div class="contenido-header">
-  <h1>Exportar citas</h1>
-  <p>Descarga tus citas de una fecha en un archivo CSV compatible con Excel, para organizar el ingreso de los pacientes a consulta.</p>
-</div>
+<div class="exportar-vista">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Exportar citas</h2>
+    <p class="vista__subtitulo">
+      Descarga tus citas de una fecha en un archivo CSV compatible con Excel, para organizar el ingreso de los pacientes a consulta.
+    </p>
+  </header>
 
-<div class="tarjeta-busqueda" style="padding: 2rem;">
-  <form (ngSubmit)="descargarCSV()">
-    <div style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
-      
-      <!-- Campo 1: Médico / Terapista (Solo lectura) -->
-      <div style="flex: 1; min-width: 200px;">
-        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Médico / Terapista</label>
-        <input 
-          type="text" 
-          [value]="nombreTerapista" 
-          disabled 
-          style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px; background-color: #f5f5f5; color: #666;">
+  <!-- Error devuelto por el backend -->
+  <div class="alerta alerta--error" *ngIf="mensajeError()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
+  </div>
+
+  <!-- Descarga exitosa -->
+  <div class="alerta alerta--exito" *ngIf="mensajeExito()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+    <span>{{ mensajeExito() }}</span>
+  </div>
+
+  <section class="tarjeta-filtro">
+    <form [formGroup]="formulario" (ngSubmit)="exportar()" class="formulario-filtro" novalidate>
+      <!-- Terapista fijo: quien inició sesión -->
+      <div class="campo-grupo">
+        <label for="terapista">Médico / Terapista</label>
+        <input id="terapista" type="text" class="campo-solo-lectura" [value]="nombreTerapista" readonly />
       </div>
 
-      <!-- Campo 2: Fecha -->
-      <div style="flex: 1; min-width: 150px;">
-        <label for="fecha" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fecha</label>
-        <input 
-          id="fecha"
-          type="date" 
-          [(ngModel)]="fechaExportar" 
-          name="fecha"
-          style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
+      <!-- Fecha (obligatoria) -->
+      <div class="campo-grupo">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" type="date" formControlName="fecha" [class.campo--invalido]="fechaInvalida()" />
+        <span class="campo-error" *ngIf="fechaInvalida()">{{ mensajes.filtroIncompleto }}</span>
       </div>
 
-      <!-- Campo 3: Estado (Visual) -->
-      <div style="flex: 1; min-width: 150px;">
-        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Estado</label>
-        <select 
-          [(ngModel)]="estadoExportar" 
-          name="estado"
-          style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
-          <option value="TODOS">Todos los estados</option>
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="COMPLETADA">Completada</option>
+      <!-- Estado -->
+      <div class="campo-grupo">
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          <option *ngFor="let opcion of estados" [value]="opcion.valor">{{ opcion.etiqueta }}</option>
         </select>
       </div>
 
-      <!-- Botón -->
-      <div>
-        <button type="submit" [disabled]="!fechaExportar || exportando()" class="btn-primario" style="padding: 0.75rem 1.5rem;">
+      <div class="campo-grupo campo-grupo--boton">
+        <button type="submit" class="btn-buscar" [disabled]="exportando()">
           {{ exportando() ? 'Generando...' : 'Exportar CSV' }}
         </button>
       </div>
+    </form>
+  </section>
 
-    </div>
-  </form>
-
-  <p style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+  <p class="nota-exportacion">
     El archivo incluye Hora, Paciente, Cédula, Teléfono y Estado, ordenado por hora y separado por punto y coma (;).
   </p>
 </div>

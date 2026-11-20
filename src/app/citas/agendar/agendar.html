@@ -1,52 +1,239 @@
-<div class="agendar-container">
-  <h2>Agendar cita</h2>
-
-  <form [formGroup]="agendarForm" (ngSubmit)="buscarFranjas()">
-    <div class="campo">
-      <label for="medicoId">Médico</label>
-      <select id="medicoId" formControlName="medicoId">
-        <option value="" disabled selected>Selecciona un médico</option>
-        <option *ngFor="let m of medicos()" [value]="m.id">
-          {{ m.nombre }}
-        </option>
-      </select>
-      <small *ngIf="agendarForm.get('medicoId')?.touched && agendarForm.get('medicoId')?.invalid">
-        Debes seleccionar un médico
-      </small>
+<div class="agendar-pagina">
+  <!-- Barra superior (misma estética del inicio) -->
+  <nav class="nav">
+    <a class="marca" routerLink="/">
+      <span class="icono-marca">PA</span>
+      Piedra Azul
+    </a>
+    <div class="nav__acciones">
+      <a class="boton-contorno" routerLink="/citas/mis-citas">Mis citas</a>
+      <a class="enlace-nav" routerLink="/">← Volver al inicio</a>
     </div>
+  </nav>
 
-    <div class="campo">
-      <label for="fecha">Fecha</label>
-      <input id="fecha" type="date" formControlName="fecha" [min]="fechaMinima" />
-      <small *ngIf="agendarForm.get('fecha')?.touched && agendarForm.get('fecha')?.invalid">
-        Debes seleccionar una fecha
-      </small>
-    </div>
+  <!-- Encabezado con indicador de pasos -->
+  <header class="encabezado">
+    <h1>Agenda tu cita</h1>
+    <p>Elige el profesional, el día y el horario que mejor te queden. Solo te toma un minuto.</p>
 
-    <button type="submit" [disabled]="cargandoFranjas()">
-      {{ cargandoFranjas() ? 'Buscando…' : 'Buscar franjas' }}
-    </button>
-  </form>
+    <ol class="pasos" aria-label="Pasos para agendar">
+      <li
+        *ngFor="let paso of pasos"
+        class="paso"
+        [class.paso--activo]="pasoActual() === paso.numero"
+        [class.paso--hecho]="pasoActual() > paso.numero || (citaConfirmada() && paso.numero === 4)"
+      >
+        <span class="paso__numero">{{ paso.numero }}</span>
+        <span class="paso__etiqueta">{{ paso.etiqueta }}</span>
+      </li>
+    </ol>
+  </header>
 
-  <!-- Mensajes -->
-  <div *ngIf="mensajeExito()" class="mensaje exito">{{ mensajeExito() }}</div>
-  <div *ngIf="mensajeError()" class="mensaje error">{{ mensajeError() }}</div>
+  <main class="contenido">
+    <!-- ================= Cita confirmada ================= -->
+    <section class="tarjeta confirmada" *ngIf="citaConfirmada() as cita; else asistente">
+      <div class="confirmada__icono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+      <h2>¡Tu cita quedó agendada!</h2>
+      <p class="confirmada__texto">Te esperamos. Recuerda llegar unos minutos antes.</p>
 
-  <!-- Franjas -->
-  <div *ngIf="franjas().length > 0" class="franjas">
-    <h3>Franjas disponibles</h3>
-    <div class="grid-franjas">
-      <button
-        *ngFor="let f of franjas()"
-        type="button"
-        class="franja"
-        [class.ocupada]="!f.disponible"
-        [disabled]="!f.disponible"
-        (click)="seleccionarFranja(f)">
-        {{ formatearHora(f.hora) }}
-      </button>
-    </div>
-  </div>
+      <dl class="resumen">
+        <div class="resumen__fila">
+          <dt>Profesional</dt>
+          <dd>{{ cita.medicoNombre || medicoElegido()?.nombre }}</dd>
+        </div>
+        <div class="resumen__fila">
+          <dt>Fecha</dt>
+          <dd class="capitalizar">{{ formatearFecha(cita.fecha) }}</dd>
+        </div>
+        <div class="resumen__fila">
+          <dt>Hora</dt>
+          <dd>{{ formatearHora(cita.hora) }}</dd>
+        </div>
+        <div class="resumen__fila">
+          <dt>Estado</dt>
+          <dd><span class="estado">{{ cita.estado | titlecase }}</span></dd>
+        </div>
+      </dl>
 
-  <a routerLink="/">← Volver al inicio</a>
+      <div class="acciones">
+        <a class="boton boton--primario" routerLink="/citas/mis-citas">Ver mis citas</a>
+        <button type="button" class="boton boton--contorno" (click)="agendarOtra()">Agendar otra cita</button>
+      </div>
+    </section>
+
+    <!-- ================= Asistente ================= -->
+    <ng-template #asistente>
+      <div class="alerta alerta--error" *ngIf="mensajeError()" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span>{{ mensajeError() }}</span>
+      </div>
+
+      <form [formGroup]="agendarForm" (ngSubmit)="buscarFranjas()" novalidate>
+        <!-- Paso 1: profesional -->
+        <section class="tarjeta">
+          <h2><span class="tarjeta__numero">1</span> ¿Con quién quieres tu cita?</h2>
+
+          <p class="vacio" *ngIf="cargandoMedicos()">Cargando profesionales…</p>
+          <p class="vacio" *ngIf="!cargandoMedicos() && medicos().length === 0">
+            En este momento no hay profesionales disponibles.
+          </p>
+
+          <div class="profesionales">
+            <button
+              *ngFor="let m of medicos()"
+              type="button"
+              class="profesional"
+              [class.profesional--elegido]="medicoSeleccionado === m.id"
+              [attr.aria-pressed]="medicoSeleccionado === m.id"
+              (click)="elegirMedico(m)"
+            >
+              <span class="profesional__avatar">{{ iniciales(m.nombre) }}</span>
+              <span class="profesional__nombre">{{ m.nombre }}</span>
+              <svg class="profesional__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </button>
+          </div>
+          <small class="campo-error" *ngIf="agendarForm.get('medicoId')?.touched && agendarForm.get('medicoId')?.invalid">
+            Debes seleccionar un profesional
+          </small>
+        </section>
+
+        <!-- Paso 2: fecha -->
+        <section class="tarjeta" [class.tarjeta--bloqueada]="!medicoSeleccionado">
+          <h2><span class="tarjeta__numero">2</span> ¿Qué día te queda bien?</h2>
+
+          <div class="dias">
+            <button
+              *ngFor="let dia of diasRapidos"
+              type="button"
+              class="dia"
+              [class.dia--elegido]="fechaSeleccionada === dia.valor"
+              [disabled]="!medicoSeleccionado"
+              (click)="elegirFecha(dia.valor)"
+            >
+              <span class="dia__nombre">{{ dia.nombre }}</span>
+              <span class="dia__numero">{{ dia.numero }}</span>
+            </button>
+          </div>
+
+          <div class="otra-fecha">
+            <label for="fecha">¿Otra fecha?</label>
+            <input
+              id="fecha"
+              type="date"
+              formControlName="fecha"
+              [min]="fechaMinima"
+              [attr.disabled]="!medicoSeleccionado ? true : null"
+              (change)="elegirFecha(fechaSeleccionada)"
+            />
+          </div>
+          <small class="campo-error" *ngIf="agendarForm.get('fecha')?.touched && agendarForm.get('fecha')?.invalid">
+            Debes seleccionar una fecha
+          </small>
+        </section>
+
+        <!-- Paso 3: horario -->
+        <section class="tarjeta" [class.tarjeta--bloqueada]="!medicoSeleccionado || !fechaSeleccionada">
+          <h2><span class="tarjeta__numero">3</span> Elige un horario</h2>
+
+          <p class="vacio" *ngIf="!medicoSeleccionado || !fechaSeleccionada">
+            Elige un profesional y un día para ver los horarios disponibles.
+          </p>
+          <p class="vacio" *ngIf="cargandoFranjas()">Buscando horarios…</p>
+
+          <ng-container *ngIf="!cargandoFranjas() && busquedaRealizada() && medicoSeleccionado && fechaSeleccionada">
+            <p class="vacio" *ngIf="franjas().length === 0 && !mensajeError()">
+              No hay horarios para este día. Prueba con otra fecha.
+            </p>
+
+            <ng-container *ngIf="franjas().length > 0">
+              <p class="horarios__info">
+                <span class="capitalizar">{{ formatearFecha(fechaSeleccionada) }}</span> ·
+                <strong>{{ totalDisponibles() }}</strong> horario(s) disponible(s)
+              </p>
+
+              <div class="bloque-horas" *ngIf="franjasManana().length > 0">
+                <h3>Mañana</h3>
+                <div class="grid-franjas">
+                  <button
+                    *ngFor="let f of franjasManana()"
+                    type="button"
+                    class="franja"
+                    [class.franja--ocupada]="!f.disponible"
+                    [class.franja--elegida]="franjaSeleccionada()?.hora === f.hora"
+                    [disabled]="!f.disponible"
+                    [title]="f.disponible ? 'Disponible' : 'Ocupado'"
+                    (click)="seleccionarFranja(f)"
+                  >
+                    {{ formatearHora(f.hora) }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="bloque-horas" *ngIf="franjasTarde().length > 0">
+                <h3>Tarde</h3>
+                <div class="grid-franjas">
+                  <button
+                    *ngFor="let f of franjasTarde()"
+                    type="button"
+                    class="franja"
+                    [class.franja--ocupada]="!f.disponible"
+                    [class.franja--elegida]="franjaSeleccionada()?.hora === f.hora"
+                    [disabled]="!f.disponible"
+                    [title]="f.disponible ? 'Disponible' : 'Ocupado'"
+                    (click)="seleccionarFranja(f)"
+                  >
+                    {{ formatearHora(f.hora) }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="leyenda">
+                <span><i class="punto punto--libre"></i> Disponible</span>
+                <span><i class="punto punto--ocupado"></i> Ocupado</span>
+              </div>
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <!-- Paso 4: confirmar -->
+        <section class="tarjeta tarjeta--confirmar" *ngIf="franjaSeleccionada() as franja">
+          <h2><span class="tarjeta__numero">4</span> Confirma tu cita</h2>
+
+          <dl class="resumen">
+            <div class="resumen__fila">
+              <dt>Profesional</dt>
+              <dd>{{ medicoElegido()?.nombre }}</dd>
+            </div>
+            <div class="resumen__fila">
+              <dt>Fecha</dt>
+              <dd class="capitalizar">{{ formatearFecha(fechaSeleccionada) }}</dd>
+            </div>
+            <div class="resumen__fila">
+              <dt>Hora</dt>
+              <dd>{{ formatearHora(franja.hora) }}</dd>
+            </div>
+          </dl>
+
+          <div class="acciones">
+            <button type="button" class="boton boton--primario" [disabled]="agendando()" (click)="confirmarCita()">
+              {{ agendando() ? 'Agendando…' : 'Confirmar cita' }}
+            </button>
+            <button type="button" class="boton boton--contorno" [disabled]="agendando()" (click)="cancelarSeleccion()">
+              Cambiar horario
+            </button>
+          </div>
+        </section>
+      </form>
+    </ng-template>
+  </main>
 </div>

@@ -1,31 +1,140 @@
-<div class="mis-citas-container">
-  <h2>Mis citas</h2>
+<!-- Íconos reutilizables -->
+<ng-template #iconoEstetoscopio>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 2v2" /><path d="M5 2v2" />
+    <path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1" />
+    <path d="M8 15a6 6 0 0 0 12 0v-3" />
+    <circle cx="20" cy="10" r="2" />
+  </svg>
+</ng-template>
+<ng-template #iconoCalendario>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+  </svg>
+</ng-template>
+<ng-template #iconoReloj>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+  </svg>
+</ng-template>
 
-  <div *ngIf="cargando()" class="estado-carga">Cargando tus citas…</div>
-
-  <div *ngIf="!cargando() && mensajeError()" class="mensaje error">
-    {{ mensajeError() }}
-  </div>
-
-  <div *ngIf="!cargando() && !mensajeError() && citas().length === 0" class="sin-citas">
-    <p>Aún no tienes citas agendadas.</p>
-    <a class="boton-agendar" routerLink="/citas/agendar">Agendar mi primera cita</a>
-  </div>
-
-  <div *ngIf="!cargando() && citas().length > 0" class="lista-citas">
-    <div class="tarjeta-cita" *ngFor="let c of citas()">
-      <div class="info-principal">
-        <p class="fecha">{{ formatearFecha(c.fecha) }}</p>
-        <p class="hora">{{ formatearHora(c.hora) }}</p>
-      </div>
-      <div class="info-secundaria">
-        <span class="medico">{{ c.medicoNombre }}</span>
-        <span class="estado" [ngClass]="'estado-' + c.estado.toLowerCase()">
-          {{ c.estado }}
-        </span>
-      </div>
+<div class="pagina">
+  <!-- ================= Encabezado ================= -->
+  <header class="topbar">
+    <a class="topbar__boton" routerLink="/" aria-label="Volver al inicio" title="Volver al inicio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M11 18l-6-6 6-6" />
+      </svg>
+    </a>
+    <div class="topbar__centro">
+      <h1>Piedra Azul</h1>
+      <p>Consultar mis citas</p>
     </div>
-  </div>
+    <span class="topbar__avatar" aria-hidden="true">{{ inicialUsuario() }}</span>
+  </header>
 
-  <a class="volver" routerLink="/">← Volver al inicio</a>
+  <main class="contenido">
+    <p class="estado-carga" *ngIf="cargando()">Cargando tus citas…</p>
+
+    <div class="alerta alerta--error" *ngIf="!cargando() && mensajeError()" role="alert">
+      {{ mensajeError() }}
+    </div>
+
+    <!-- Sin ninguna cita -->
+    <section class="vacio-total" *ngIf="!cargando() && !mensajeError() && citas().length === 0">
+      <div class="vacio-total__icono"><ng-container [ngTemplateOutlet]="iconoCalendario"></ng-container></div>
+      <h2>Aún no tienes citas</h2>
+      <p>Cuando agendes una cita, aparecerá aquí.</p>
+      <a class="boton boton--primario" routerLink="/citas/agendar">Agendar mi primera cita</a>
+    </section>
+
+    <ng-container *ngIf="!cargando() && !mensajeError() && citas().length > 0">
+      <!-- ================= Tu próxima cita ================= -->
+      <section class="proxima" *ngIf="proximaCita() as cita">
+        <div class="proxima__profesional">
+          <span class="proxima__etiqueta">Tu próxima cita</span>
+          <div class="profesional">
+            <span class="avatar avatar--claro"><ng-container [ngTemplateOutlet]="iconoEstetoscopio"></ng-container></span>
+            <div class="profesional__textos">
+              <strong class="profesional__nombre">{{ nombreProfesional(cita) }}</strong>
+              <span class="profesional__detalle" *ngIf="detalleProfesional(cita)">{{ detalleProfesional(cita) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <ul class="proxima__datos">
+          <li><ng-container [ngTemplateOutlet]="iconoCalendario"></ng-container>{{ formatearFechaCorta(cita.fecha) }}</li>
+          <li><ng-container [ngTemplateOutlet]="iconoReloj"></ng-container>{{ formatearHora(cita.hora) }}</li>
+          <li><span class="estado" [ngClass]="claseEstado(cita.estado)">{{ textoEstado(cita.estado) }}</span></li>
+        </ul>
+
+        <div class="proxima__acciones">
+          <button type="button" class="boton boton--contorno-claro" (click)="accionNoDisponible('Reagendar')">Reagendar</button>
+          <button type="button" class="boton boton--peligro" (click)="accionNoDisponible('Cancelar')">Cancelar</button>
+        </div>
+      </section>
+
+      <!-- ================= Todas tus citas ================= -->
+      <div class="lista__encabezado">
+        <h2>Todas tus citas</h2>
+        <div class="pestanas" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            class="pestana"
+            [class.pestana--activa]="pestana() === 'proximas'"
+            [attr.aria-selected]="pestana() === 'proximas'"
+            (click)="cambiarPestana('proximas')"
+          >
+            Próximas
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="pestana"
+            [class.pestana--activa]="pestana() === 'anteriores'"
+            [attr.aria-selected]="pestana() === 'anteriores'"
+            (click)="cambiarPestana('anteriores')"
+          >
+            Anteriores
+          </button>
+        </div>
+      </div>
+
+      <p class="vacio" *ngIf="citasVisibles().length === 0">
+        <ng-container *ngIf="pestana() === 'proximas'">
+          No tienes más citas próximas.
+          <a routerLink="/citas/agendar">Agendar una cita</a>
+        </ng-container>
+        <ng-container *ngIf="pestana() === 'anteriores'">Todavía no tienes citas anteriores.</ng-container>
+      </p>
+
+      <div class="grid-citas">
+        <article class="tarjeta" *ngFor="let cita of citasVisibles()">
+          <div class="tarjeta__cabecera">
+            <div class="profesional">
+              <span class="avatar"><ng-container [ngTemplateOutlet]="iconoEstetoscopio"></ng-container></span>
+              <div class="profesional__textos">
+                <strong class="profesional__nombre">{{ nombreProfesional(cita) }}</strong>
+                <span class="profesional__detalle" *ngIf="detalleProfesional(cita)">{{ detalleProfesional(cita) }}</span>
+              </div>
+            </div>
+            <span class="estado" [ngClass]="claseEstado(cita.estado)">{{ textoEstado(cita.estado) }}</span>
+          </div>
+
+          <p class="tarjeta__fecha">
+            <ng-container [ngTemplateOutlet]="iconoCalendario"></ng-container>
+            {{ formatearFecha(cita.fecha) }} · {{ formatearHora(cita.hora) }}
+          </p>
+
+          <div class="tarjeta__acciones" *ngIf="permiteAcciones(cita)">
+            <button type="button" class="boton boton--primario" (click)="accionNoDisponible('Reagendar')">Reagendar</button>
+            <button type="button" class="boton boton--peligro" (click)="accionNoDisponible('Cancelar')">Cancelar</button>
+          </div>
+        </article>
+      </div>
+    </ng-container>
+  </main>
+
+  <footer class="footer">© 2026 Piedra Azul. Todos los derechos reservados.</footer>
 </div>

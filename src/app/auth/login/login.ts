@@ -57,7 +57,7 @@ export class Login {
           if (this.auth.isAdmin()) {
             this.router.navigate(['/admin/resumen']);
           } else if (this.auth.isAgendador()) {
-            this.router.navigate(['/agendador/citas']);
+            this.router.navigate(['/agendador/resumen']);
           } else if (this.auth.isMedico()) {
             this.router.navigate(['/medico']);
           } else if (this.auth.isTherapist()) {

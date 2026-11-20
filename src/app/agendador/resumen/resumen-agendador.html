@@ -1,0 +1,147 @@
+<div class="resumen-agendador">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Resumen</h2>
+    <p class="vista__subtitulo">{{ textoHoy }} · así va la agenda de Piedra Azul.</p>
+  </header>
+
+  <div class="alerta alerta--error" *ngIf="mensajeError()" role="alert">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
+  </div>
+
+  <p class="texto-suave" *ngIf="cargando()">Cargando resumen…</p>
+
+  <ng-container *ngIf="!cargando() && !mensajeError()">
+    <!-- Tarjetas con números -->
+    <section class="indicadores">
+      <article class="indicador indicador--destacado">
+        <span class="indicador__etiqueta">Citas de hoy</span>
+        <strong class="indicador__valor">{{ activasHoy().length }}</strong>
+        <span class="indicador__detalle">
+          {{ canceladasHoy() > 0 ? canceladasHoy() + ' cancelada(s) aparte' : 'sin cancelaciones' }}
+        </span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Pendientes por confirmar</span>
+        <strong class="indicador__valor">{{ pendientes() }}</strong>
+        <span class="indicador__detalle">de hoy en adelante</span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Próximos 7 días</span>
+        <strong class="indicador__valor">{{ proximosDias() }}</strong>
+        <span class="indicador__detalle">a partir de mañana</span>
+      </article>
+
+      <article class="indicador">
+        <span class="indicador__etiqueta">Profesionales con citas hoy</span>
+        <strong class="indicador__valor">{{ porProfesionalHoy().length }}</strong>
+        <span class="indicador__detalle">médicos y terapistas</span>
+      </article>
+    </section>
+
+    <div class="fila">
+      <!-- Agenda de hoy -->
+      <section class="panel panel--ancho">
+        <div class="panel__cabecera">
+          <h3>Agenda de hoy</h3>
+          <a class="enlace" routerLink="/agendador/citas">Ver todas las citas →</a>
+        </div>
+
+        <p class="texto-suave" *ngIf="agendaHoy().length === 0">No hay citas agendadas para hoy.</p>
+
+        <div class="tabla-contenedor" *ngIf="agendaHoy().length > 0">
+          <table class="tabla-citas">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Profesional</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cita of agendaHoy()">
+                <td class="celda-hora">{{ formatearHora(cita.hora) }}</td>
+                <td>{{ nombrePaciente(cita) }}</td>
+                <td>{{ nombreProfesional(cita) }}</td>
+                <td>
+                  <span class="badge-estado" [ngClass]="claseEstado(cita.estado)">{{
+                    textoEstado(cita.estado)
+                  }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Hoy por profesional -->
+      <section class="panel">
+        <div class="panel__cabecera">
+          <h3>Hoy por profesional</h3>
+        </div>
+
+        <p class="texto-suave" *ngIf="porProfesionalHoy().length === 0">
+          Ningún profesional tiene citas hoy.
+        </p>
+
+        <ul class="barras" *ngIf="porProfesionalHoy().length > 0">
+          <li class="barra" *ngFor="let p of porProfesionalHoy()">
+            <div class="barra__texto">
+              <span class="barra__nombre">{{ p.nombre }}</span>
+              <strong>{{ p.cantidad }}</strong>
+            </div>
+            <div class="barra__pista">
+              <div class="barra__relleno" [style.width.%]="p.porcentaje"></div>
+            </div>
+          </li>
+        </ul>
+
+        <div class="accesos">
+          <a class="acceso" routerLink="/agendador/historial">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            Historial de pacientes
+          </a>
+          <a class="acceso" routerLink="/agendador/exportar">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Exportar citas
+          </a>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</div>

@@ -21,14 +21,11 @@ export class AgendadorLayout {
   private readonly router = inject(Router);
 
   readonly menu: MenuItem[] = [
-    { etiqueta: 'Resumen', icono: 'resumen' },
+    { etiqueta: 'Resumen', ruta: '/agendador/resumen', icono: 'resumen' },
     { etiqueta: 'Citas por medico', ruta: '/agendador/citas', icono: 'citas' },
     { etiqueta: 'Historial de pacientes', ruta: '/agendador/historial', icono: 'historial' },
     { etiqueta: 'Exportar citas', ruta: '/agendador/exportar', icono: 'exportar' },
-    { etiqueta: 'Médicos y terapistas', icono: 'medicos' },
-    { etiqueta: 'Pacientes', icono: 'pacientes' },
   ];
-
   cerrarSesion(): void {
     this.auth.logout();
     this.router.navigate(['/']);

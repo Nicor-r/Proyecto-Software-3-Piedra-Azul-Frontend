@@ -1,0 +1,12 @@
+
+.alerta--exito {
+  background-color: #eafaf1;
+  color: #237847;
+  border: 1px solid #c0ebcb;
+}
+
+.nota-exportacion {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #627d98;
+}

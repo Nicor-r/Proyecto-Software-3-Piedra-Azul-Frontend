@@ -1,0 +1,204 @@
+/* Colores del panel agendador/médico */
+.resumen-agendador {
+  --azul-noche: #152e3d;
+  --azul-medio: #729ebc;
+  --azul-claro: #e6f0f8;
+  --texto-suave: #5c7082;
+  --borde: #dce4ed;
+}
+
+.resumen-agendador * {
+  box-sizing: border-box;
+}
+
+.texto-suave {
+  color: var(--texto-suave);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ---------- Indicadores ---------- */
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.indicador {
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.indicador__etiqueta {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.indicador__valor {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--azul-noche);
+}
+
+.indicador__detalle {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+
+.indicador--destacado {
+  background: var(--azul-noche);
+  border-color: var(--azul-noche);
+}
+
+.indicador--destacado .indicador__etiqueta,
+.indicador--destacado .indicador__detalle {
+  color: #a4bed2;
+}
+
+.indicador--destacado .indicador__valor {
+  color: #ffffff;
+}
+
+/* ---------- Paneles ---------- */
+.fila {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  min-width: 0;
+}
+
+.panel__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel__cabecera h3 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--azul-noche);
+}
+
+.enlace {
+  font-size: 0.85rem;
+  color: #3b6e91;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.enlace:hover {
+  text-decoration: underline;
+}
+
+.celda-hora {
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--azul-noche);
+}
+
+/* ---------- Barras por profesional ---------- */
+.barras {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.barra__texto {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  margin-bottom: 0.35rem;
+}
+
+.barra__nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra__texto strong {
+  color: var(--azul-noche);
+}
+
+.barra__pista {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--azul-claro);
+  overflow: hidden;
+}
+
+.barra__relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--azul-medio);
+}
+
+/* ---------- Accesos rápidos ---------- */
+.accesos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.acceso {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: #f4f7fa;
+  color: var(--azul-noche);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.acceso:hover {
+  background: var(--azul-claro);
+}
+
+.acceso svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ---------- Pantallas pequeñas ---------- */
+@media (max-width: 1000px) {
+  .indicadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fila {
+    grid-template-columns: 1fr;
+  }
+}

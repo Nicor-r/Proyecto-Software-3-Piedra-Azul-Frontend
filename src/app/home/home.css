@@ -85,7 +85,7 @@
   color: var(--azul-oscuro);
 }
 
-.boton-sesion {
+.landing .boton-sesion {
   border: 1px solid var(--azul-oscuro);
   color: var(--azul-oscuro);
   background: transparent;
@@ -95,7 +95,7 @@
   font-weight: 500;
 }
 
-.boton-sesion:hover {
+.landing .boton-sesion:hover {
   background: var(--azul-oscuro);
   color: #fff;
 }
@@ -423,7 +423,7 @@
   font-size: 0.78em;
 }
 
-.boton-agendar-equipo {
+.landing .boton-agendar-equipo {
   margin-top: 1em;
   width: 100%;
   background: var(--azul-oscuro);
@@ -435,7 +435,7 @@
   font-weight: 500;
 }
 
-.boton-agendar-equipo:hover {
+.landing .boton-agendar-equipo:hover {
   background: var(--azul-medio);
 }
 

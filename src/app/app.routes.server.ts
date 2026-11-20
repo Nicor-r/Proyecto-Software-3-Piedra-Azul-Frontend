@@ -8,6 +8,8 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'terapista/**', renderMode: RenderMode.Client },
   { path: 'admin', renderMode: RenderMode.Client },
   { path: 'admin/**', renderMode: RenderMode.Client },
+  { path: 'agendador', renderMode: RenderMode.Client },
+  { path: 'agendador/**', renderMode: RenderMode.Client },
   {
     path: '**',
     renderMode: RenderMode.Prerender

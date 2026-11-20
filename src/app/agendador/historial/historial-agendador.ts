@@ -5,13 +5,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, of } from 'rxjs';
 import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
-import { CitasService, Cita } from './../../core/services/citas';
+import { CitasService, Cita, Doctor } from './../../core/services/citas';
 import { MedicoService, PacienteSugerencia } from './../../core/services/medico';
+import { claseEstado, formatearFecha, formatearHora, textoEstado } from '../../medico/formato-cita';
 
 export const MENSAJES_HISTORIAL = {
   cedulaVacia: 'Debe ingresar el número de cédula',
   formatoInvalido: 'La cédula debe contener solo números, entre 6 y 10 dígitos',
   sinCitas: 'El paciente no tiene citas registradas',
+  sinCoincidencias: 'No se encontraron pacientes con esa cédula',
   errorGeneral: 'Ocurrió un error al consultar el historial. Intenta de nuevo.',
 } as const;
 
@@ -22,12 +24,19 @@ interface ResultadoSugerencias {
   sugerencias: PacienteSugerencia[] | null;
 }
 
+/** Resultado que se muestra después de buscar una cédula. */
+interface ResultadoHistorial {
+  cedula: string;
+  nombrePaciente: string;
+  citas: Cita[];
+}
+
 @Component({
   selector: 'app-historial-agendador',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './historial-agendador.html',
-  styleUrls: ['../estilos-agendador.css', './historial-agendador.css'], // Asegúrate de tener el CSS
+  styleUrls: ['../estilos-agendador.css', './historial-agendador.css'],
 })
 export class HistorialAgendador {
   private readonly fb = inject(FormBuilder);
@@ -40,8 +49,8 @@ export class HistorialAgendador {
     cedula: ['', [Validators.required, Validators.pattern(/^\d{6,10}$/)]],
   });
 
-  // Usamos Cita[] directo porque tu backend devuelve eso
-  readonly historial = signal<Cita[]>([]);
+  /** null = todavía no se ha buscado (o la búsqueda falló). */
+  readonly historial = signal<ResultadoHistorial | null>(null);
   readonly cargando = signal(false);
   readonly mensajeError = signal('');
 
@@ -50,6 +59,15 @@ export class HistorialAgendador {
   readonly sinCoincidencias = signal(false);
   private readonly textoEscrito$ = new Subject<string>();
   private cedulaBuscada = '';
+
+  /** id del profesional -> nombre real (evita mostrar "Médico #doc-x"). */
+  private readonly nombresProfesionales = signal<Map<string, string>>(new Map());
+
+  // Mismos formatos que el panel del médico
+  readonly formatearFecha = formatearFecha;
+  readonly formatearHora = formatearHora;
+  readonly textoEstado = textoEstado;
+  readonly claseEstado = claseEstado;
 
   constructor() {
     this.textoEscrito$
@@ -60,6 +78,15 @@ export class HistorialAgendador {
         takeUntilDestroyed()
       )
       .subscribe((resultado) => this.mostrarSugerencias(resultado));
+
+    this.citasService
+      .obtenerDoctores()
+      .pipe(catchError(() => of<Doctor[]>([])), takeUntilDestroyed())
+      .subscribe((profesionales) =>
+        this.nombresProfesionales.set(
+          new Map<string, string>(profesionales.map((p): [string, string] => [p.id, p.nombre]))
+        )
+      );
   }
 
   get cedula() {
@@ -88,6 +115,10 @@ export class HistorialAgendador {
     return this.cedula.hasError('required') ? this.mensajes.cedulaVacia : this.mensajes.formatoInvalido;
   }
 
+  nombreProfesional(cita: Cita): string {
+    return this.nombresProfesionales().get(cita.medicoId) ?? cita.medicoNombre ?? cita.medicoId;
+  }
+
   buscar(): void {
     this.mensajeError.set('');
     this.cedula.setValue(this.cedula.value.trim());
@@ -96,24 +127,26 @@ export class HistorialAgendador {
     this.ocultarSugerencias();
 
     if (this.cedula.invalid) {
-      this.historial.set([]);
+      this.historial.set(null);
       return;
     }
 
+    const cedula = this.cedula.value;
     this.cargando.set(true);
-    // Usamos tu servicio de citas
-    this.citasService.obtenerHistorialPaciente(this.cedula.value).subscribe({
+
+    this.citasService.obtenerHistorialPaciente(cedula).subscribe({
       next: (citas) => {
-        this.historial.set(citas);
-        if (citas.length === 0) {
-          this.mensajeError.set(this.mensajes.sinCitas);
-        }
+        this.historial.set({
+          cedula,
+          nombrePaciente: citas.find((c) => c.pacienteNombre)?.pacienteNombre ?? '',
+          citas,
+        });
         this.cargando.set(false);
       },
       error: (error: HttpErrorResponse) => {
-        this.historial.set([]);
+        this.historial.set(null);
         // Muestra el mensaje exacto del backend (ej: "Paciente no encontrado con identificacion 1061000004")
-        this.mensajeError.set(error.error?.message ?? 'Ocurrió un error al consultar el historial');
+        this.mensajeError.set(error.error?.message ?? this.mensajes.errorGeneral);
         this.cargando.set(false);
       },
     });
@@ -123,7 +156,6 @@ export class HistorialAgendador {
     if (!/^\d{3,10}$/.test(texto)) {
       return of({ texto, sugerencias: null });
     }
-    // Si tu compañero tiene el endpoint de sugerencias en MedicoService, lo reutilizamos
     return this.medicoService.sugerirPacientes(texto).pipe(
       map((sugerencias) => ({ texto, sugerencias })),
       catchError(() => of({ texto, sugerencias: null }))

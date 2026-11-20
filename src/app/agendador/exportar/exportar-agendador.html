@@ -1,28 +1,58 @@
-<div class="contenido-header">
-  <h1>Exportar citas</h1>
-  <p>Descarga el listado de pacientes agendados para un médico específico.</p>
-</div>
+<div class="exportar-vista">
+  <header class="vista__encabezado">
+    <h2 class="vista__titulo">Exportar citas</h2>
+    <p class="vista__subtitulo">
+      Descarga en un archivo CSV compatible con Excel las citas de un médico o terapista en una fecha.
+    </p>
+  </header>
 
-<div class="tarjeta-busqueda" style="padding: 2rem;">
-  <div style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
-    
-    <div style="flex: 1; min-width: 200px;">
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Médico / Terapista</label>
-      <select [(ngModel)]="medicoSeleccionado" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
-        <option value="">Seleccione un especialista</option>
-        <option *ngFor="let m of medicos()" [value]="m.id">{{ m.nombre }}</option>
-      </select>
-    </div>
-
-    <div style="flex: 1; min-width: 150px;">
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Fecha</label>
-      <input type="date" [(ngModel)]="fechaExportar" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
-    </div>
-
-    <div>
-      <button (click)="descargarCSV()" [disabled]="!fechaExportar || !medicoSeleccionado || exportando()" class="btn-primario" style="padding: 0.75rem 1.5rem;">
-        {{ exportando() ? 'Generando...' : 'Exportar CSV' }}
-      </button>
-    </div>
+  <!-- Error devuelto por el backend -->
+  <div class="alerta alerta--error" *ngIf="mensajeError()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ mensajeError() }}</span>
   </div>
+
+  <!-- Descarga exitosa -->
+  <div class="alerta alerta--exito" *ngIf="mensajeExito()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+    <span>{{ mensajeExito() }}</span>
+  </div>
+
+  <section class="tarjeta-filtro">
+    <form [formGroup]="formulario" (ngSubmit)="exportar()" class="formulario-filtro" novalidate>
+      <!-- Médico / terapista (obligatorio) -->
+      <div class="campo-grupo">
+        <label for="medico">Médico / Terapista</label>
+        <select id="medico" formControlName="medicoId" [class.campo--invalido]="campoInvalido('medicoId')">
+          <option value="">Seleccione un especialista</option>
+          <option *ngFor="let m of medicos()" [value]="m.id">{{ m.nombre }}</option>
+        </select>
+        <span class="campo-error" *ngIf="campoInvalido('medicoId')">{{ mensajes.medicoVacio }}</span>
+      </div>
+
+      <!-- Fecha (obligatoria) -->
+      <div class="campo-grupo">
+        <label for="fecha">Fecha</label>
+        <input id="fecha" type="date" formControlName="fecha" [class.campo--invalido]="campoInvalido('fecha')" />
+        <span class="campo-error" *ngIf="campoInvalido('fecha')">{{ mensajes.fechaVacia }}</span>
+      </div>
+
+      <div class="campo-grupo campo-grupo--boton">
+        <button type="submit" class="btn-buscar" [disabled]="exportando()">
+          {{ exportando() ? 'Generando...' : 'Exportar CSV' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <p class="nota-exportacion">
+    El archivo incluye Hora, Paciente, Cédula, Teléfono y Estado, ordenado por hora y separado por punto y coma (;).
+  </p>
 </div>

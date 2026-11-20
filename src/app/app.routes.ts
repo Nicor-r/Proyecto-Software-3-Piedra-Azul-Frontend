@@ -20,6 +20,8 @@ import { TerapistaLayout } from './features/terapista/layout/terapista-layout';
 import { ExportarAgendador } from './agendador/exportar/exportar-agendador';
 import { HistorialAgendador } from './agendador/historial/historial-agendador';
 import { Resumen } from './admin/resumen/resumen';
+import { ResumenAgendador } from './agendador/resumen/resumen-agendador';
+import { agendadorGuard } from './core/guards/agendador.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -65,11 +67,13 @@ export const routes: Routes = [
       },
     ]
   },
-    {
+  {
     path: 'agendador',
     component: AgendadorLayout,
+    canActivate: [agendadorGuard],
     children: [
-      { path: '', redirectTo: 'citas', pathMatch: 'full' },
+      { path: '', redirectTo: 'resumen', pathMatch: 'full' },
+      { path: 'resumen', component: ResumenAgendador },
       { path: 'citas', component: CitasAgendador },
       { path: 'historial', component: HistorialAgendador },
       { path: 'exportar', component: ExportarAgendador }

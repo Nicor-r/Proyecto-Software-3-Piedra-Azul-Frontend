@@ -29,12 +29,6 @@ export interface CancelarCitaRequest {
   motivo: string;
 }
 
-export interface ReagendarCitaRequest {
-  citaId: number;
-  nuevaFecha: string;
-  nuevaHora: string;
-}
-
 export interface Cita {
   id: number;
   pacienteId: string;

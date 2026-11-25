@@ -94,14 +94,6 @@ export class CitasService {
 
 cancelarCitaPaciente(datos: CancelarCitaRequest): Observable<Cita> {
   return this.http.put<Cita>(`${this.apiUrl}/${datos.citaId}/cancelar`, { motivo: datos.motivo });
-}
-
-  reagendarCitaMedico(datos: ReagendarCitaRequest): Observable<Cita> {
-    return this.http.post<Cita>(`${this.apiUrl}/reagendar`, datos);
-  }
-
-  obtenerCitasMedico(): Observable<Cita[]> {
-  return this.http.get<Cita[]>(`${this.apiUrl}/medico/citas`);
   }
 
   obtenerMisCitas(): Observable<Cita[]> {

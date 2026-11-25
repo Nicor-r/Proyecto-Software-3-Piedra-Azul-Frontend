@@ -24,6 +24,11 @@ export interface AgendarCitaRequest {
   hora: string;
 }
 
+export interface CancelarCitaRequest {
+  citaId: number;
+  motivo: string;
+}
+
 export interface Cita {
   id: number;
   pacienteId: string;
@@ -79,6 +84,10 @@ export class CitasService {
   agendarCita(datos: AgendarCitaRequest): Observable<Cita> {
     // El token lo agrega el interceptor automáticamente
     return this.http.post<Cita>(`${this.apiUrl}/agendar`, datos);
+  }
+
+cancelarCitaPaciente(datos: CancelarCitaRequest): Observable<Cita> {
+  return this.http.put<Cita>(`${this.apiUrl}/${datos.citaId}/cancelar`, { motivo: datos.motivo });
   }
 
   obtenerMisCitas(): Observable<Cita[]> {

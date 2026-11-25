@@ -1,7 +1,7 @@
-import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { catchError, forkJoin, of } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { ToastrService } from '@iqx-limited/ngx-toastr';
 import { CitasService, Cita, Doctor } from '../../core/services/citas';
 import { Auth } from '../../core/services/auth';
@@ -20,11 +20,18 @@ export class MisCitas implements OnInit {
   private readonly auth = inject(Auth);
   private readonly toastr = inject(ToastrService);
   private readonly esNavegador = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly router = inject(Router);
+  private readonly HORAS_MIN_ANTELACION = 48;
+  readonly motivoValido = computed(() => this.motivo().trim().length >= 10);
 
   citas = signal<Cita[]>([]);
   cargando = signal(true);
   mensajeError = signal('');
   pestana = signal<Pestana>('proximas');
+  citaACancelar = signal<Cita | null>(null);
+  motivo = signal('');
+  cancelando = signal(false);
+  errorCancelacion = signal('');
 
   /** id del profesional -> nombre real (de /api/doctores y /api/terapistas). */
   private readonly nombresProfesionales = signal<Map<string, string>>(new Map());
@@ -111,6 +118,55 @@ export class MisCitas implements OnInit {
     const estado = cita.estado?.toUpperCase();
     return this.momento(cita) >= Date.now() && estado !== 'CANCELADA' && estado !== 'COMPLETADA';
   }
+
+  // Cancelaciones y utilidades de cancelaciones
+
+  puedeCancelar(cita: Cita): boolean {
+  const limite = Date.now() + this.HORAS_MIN_ANTELACION * 60 * 60 * 1000;
+  return this.momento(cita) >= limite;
+  }
+
+abrirConfirmacion(cita: Cita): void {
+  if (!this.puedeCancelar(cita)) return;
+  this.motivo.set('');
+  this.errorCancelacion.set('');
+  this.citaACancelar.set(cita);
+}
+
+@HostListener('document:keydown.escape')
+cerrarConfirmacion(): void {
+  if (this.cancelando()) return;
+  this.citaACancelar.set(null);
+}
+
+confirmarCancelacion(): void {
+  const cita = this.citaACancelar();
+  if (!cita || !this.motivoValido()) return;
+
+  this.errorCancelacion.set('');
+  this.cancelando.set(true);
+
+  this.citasService
+    .cancelarCitaPaciente({ citaId: cita.id, motivo: this.motivo().trim() })
+    .subscribe({
+      next: () => {
+        this.cancelando.set(false);
+        this.citaACancelar.set(null);
+        this.toastr.success('Tu cita fue cancelada correctamente', 'Cita cancelada');
+        this.cargarCitas();
+      },
+      error: (error) => {
+        console.error('Error al cancelar cita:', error);
+        const mensaje =
+          typeof error.error === 'string'
+            ? error.error
+            : error.error?.message ?? 'No se pudo cancelar la cita';
+        this.cancelando.set(false);
+        this.errorCancelacion.set(mensaje);
+        this.toastr.error(mensaje, 'Error al cancelar');
+      },
+    });
+}
 
   // ---------- Formatos ----------
 

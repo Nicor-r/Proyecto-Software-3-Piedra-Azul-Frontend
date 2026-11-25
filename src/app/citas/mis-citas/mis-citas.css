@@ -439,6 +439,89 @@
   font-size: 0.75em;
 }
 
+/* ---------- Modal de cancelación ---------- */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 50, 79, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--superficie);
+  color: var(--texto);
+  border-radius: 0.8em;
+  padding: 1.75em;
+  width: 100%;
+  max-width: 28em;
+  box-shadow: 0 1em 3em rgba(22, 50, 79, 0.35);
+  font-family: 'Lexend', 'Segoe UI', system-ui, sans-serif;
+}
+
+.modal h2 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.5em;
+  color: var(--azul-oscuro);
+  margin: 0 0 0.6em;
+}
+
+.modal p {
+  margin: 0 0 1.2em;
+  color: var(--texto-suave);
+  line-height: 1.4;
+}
+
+.modal p strong {
+  color: var(--texto);
+}
+
+.modal label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 500;
+  margin-bottom: 0.4em;
+}
+
+.modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7em 0.9em;
+  border: 1.5px solid var(--borde);
+  border-radius: 0.6em;
+  font: inherit;
+  font-size: 0.9em;
+  color: var(--texto);
+  resize: vertical;
+}
+
+.modal textarea:focus-visible {
+  outline: 3px solid var(--azul-fondo);
+  outline-offset: 1px;
+  border-color: var(--azul-fondo);
+}
+
+.modal__error {
+  margin: 0.8em 0 0;
+  padding: 0.7em 0.9em;
+  border-radius: 0.6em;
+  background: #fbeae6;
+  color: #b5432e;
+  font-size: 0.88em;
+}
+
+.modal__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75em;
+  margin-top: 1.5em;
+  flex-wrap: wrap;
+}
+
 /* ---------- Pantallas pequeñas ---------- */
 @media (max-width: 800px) {
   .proxima {

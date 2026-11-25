@@ -1,0 +1,50 @@
+name: CI
+
+# Integración continua del frontend: instala, ejecuta las pruebas y compila para producción.
+# El despliegue lo hace Vercel al detectar el push a main (ver vercel.json).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Si llega un push nuevo a la misma rama, se cancela la ejecución anterior
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas-y-build:
+    name: Probar y compilar
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      # Angular 22 exige Node ^22.22.3 || ^24.15.0 || >=26
+      - name: Configurar Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas (Vitest)
+        run: npm test -- --no-watch
+
+      - name: Compilar para producción
+        run: npm run build
+
+      - name: Comprobar que el entorno de producción no apunta a localhost
+        run: |
+          if grep -rl "localhost:8080" dist/piedra-azul/browser/*.js; then
+            echo "El bundle de producción contiene localhost:8080"
+            exit 1
+          fi

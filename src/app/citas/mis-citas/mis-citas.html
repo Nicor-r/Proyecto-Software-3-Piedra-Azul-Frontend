@@ -69,8 +69,13 @@
         </ul>
 
         <div class="proxima__acciones">
-          <button type="button" class="boton boton--contorno-claro" (click)="accionNoDisponible('Reagendar')">Reagendar</button>
-          <button type="button" class="boton boton--peligro" (click)="accionNoDisponible('Cancelar')">Cancelar</button>
+          <button type="button" class="boton boton--peligro" [disabled]="!puedeCancelar(cita)"
+            [title]="puedeCancelar(cita) ? '' : 'Solo se puede cancelar con 2 días de antelación'" (click)="abrirConfirmacion(cita)">
+            Cancelar
+          </button>
+          <small class="nota" *ngIf="!puedeCancelar(cita)">
+            Ya no se puede cancelar (menos de 2 días)
+          </small>
         </div>
       </section>
 
@@ -128,12 +133,63 @@
           </p>
 
           <div class="tarjeta__acciones" *ngIf="permiteAcciones(cita)">
-            <button type="button" class="boton boton--primario" (click)="accionNoDisponible('Reagendar')">Reagendar</button>
-            <button type="button" class="boton boton--peligro" (click)="accionNoDisponible('Cancelar')">Cancelar</button>
+            <button type="button" class="boton boton--peligro" [disabled]="!puedeCancelar(cita)"
+              [title]="puedeCancelar(cita) ? '' : 'Solo se puede cancelar con 2 días de antelación'" (click)="abrirConfirmacion(cita)">
+              Cancelar
+            </button>
+            @if (!puedeCancelar(cita)) {
+            <small class="nota">Ya no se puede cancelar (menos de 2 días)</small>
+            }
           </div>
         </article>
       </div>
     </ng-container>
+
+    @if (citaACancelar(); as cita) {
+  <div class="modal-fondo" (click)="cerrarConfirmacion()">
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-titulo"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="modal-titulo">¿Cancelar esta cita?</h2>
+      <p>
+        <strong>{{ nombreProfesional(cita) }}</strong><br />
+        {{ formatearFecha(cita.fecha) }} · {{ formatearHora(cita.hora) }}
+      </p>
+
+      <label for="motivo">Motivo de la cancelación</label>
+      <textarea
+        id="motivo"
+        rows="3"
+        maxlength="300"
+        placeholder="Cuéntanos brevemente por qué cancelas (mín. 10 caracteres)"
+        [value]="motivo()"
+        (input)="motivo.set($any($event.target).value)"
+      ></textarea>
+
+      @if (errorCancelacion()) {
+        <p class="modal__error" role="alert">{{ errorCancelacion() }}</p>
+      }
+
+      <div class="modal__acciones">
+        <button type="button" class="boton boton--contorno" (click)="cerrarConfirmacion()" [disabled]="cancelando()">
+          Volver
+        </button>
+        <button
+          type="button"
+          class="boton boton--peligro"
+          (click)="confirmarCancelacion()"
+          [disabled]="cancelando() || !motivoValido()"
+        >
+          {{ cancelando() ? 'Cancelando…' : 'Sí, cancelar cita' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
   </main>
 
   <footer class="footer">© 2026 Piedra Azul. Todos los derechos reservados.</footer>
